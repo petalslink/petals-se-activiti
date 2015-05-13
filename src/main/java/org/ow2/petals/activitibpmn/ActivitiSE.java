@@ -457,7 +457,9 @@ public class ActivitiSE extends AbstractServiceEngine {
                                     ITG_OP_GETTASKS),
                             new GetTasksOperation(this.activitiEngine.getTaskService(), this.activitiEngine
                                     .getRepositoryService(), this.getLogger()));
-                } catch (final OperationInitializationException | WSDLException e) {
+                } catch (final OperationInitializationException e) {
+                    this.getLogger().log(Level.WARNING, "Integration operations are not completly initialized", e);
+                } catch (final WSDLException e) {
                     this.getLogger().log(Level.WARNING, "Integration operations are not completly initialized", e);
                 }
             } else {
@@ -505,7 +507,11 @@ public class ActivitiSE extends AbstractServiceEngine {
                         .warning(
                                 "The implementation of the process engine configuration is not the expected one ! Identity service not overriden !");
             }
-        } catch (final InstantiationException | IllegalAccessException | IdentityServiceInitException e) {
+        } catch (final InstantiationException e) {
+            throw new JBIException("An error occurred while instantiating the identity service.", e);
+        } catch (final IllegalAccessException e) {
+            throw new JBIException("An error occurred while instantiating the identity service.", e);
+        } catch (final IdentityServiceInitException e) {
             throw new JBIException("An error occurred while instantiating the identity service.", e);
         }
     }

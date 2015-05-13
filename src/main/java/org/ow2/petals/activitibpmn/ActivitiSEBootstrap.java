@@ -52,6 +52,7 @@ import javax.management.InvalidAttributeValueException;
 
 import org.ow2.petals.activitibpmn.identity.IdentityService;
 import org.ow2.petals.component.framework.DefaultBootstrap;
+import org.w3c.dom.Element;
 
 /**
  * The component class of the Activiti BPMN Service Engine.
@@ -578,6 +579,24 @@ public class ActivitiSEBootstrap extends DefaultBootstrap {
             }
         }
 
+    }
+
+    private void setParam(final String name, String value) {
+        for (Element element : this.getJbiComponentConfiguration().getComponent().getAny()) {
+            if (element.getLocalName().equals(name)) {
+                element.setTextContent(value);
+            }
+        }
+    }
+
+    private String getParam(final String name) {
+        for (Element element : this.getJbiComponentConfiguration().getComponent().getAny()) {
+            if (element.getLocalName().equals(name)) {
+                return element.getTextContent();
+            }
+        }
+
+        return null;
     }
      
 }

@@ -32,7 +32,6 @@ import org.apache.cxf.message.Exchange;
 import org.apache.cxf.service.model.EndpointInfo;
 import org.ow2.petals.activitibpmn.outgoing.PetalsActivitiAsyncContext;
 import org.ow2.petals.commons.log.FlowAttributes;
-import org.ow2.petals.commons.log.FlowAttributesExchangeHelper;
 import org.ow2.petals.component.framework.api.Message.MEPConstants;
 import org.ow2.petals.component.framework.api.exception.PEtALSCDKException;
 import org.ow2.petals.component.framework.jbidescriptor.generated.Consumes;
@@ -94,9 +93,8 @@ public class NormalizedMessageOutputStream extends ByteArrayOutputStream {
             // TODO: Find a way to define the MEP to use.
             final org.ow2.petals.component.framework.api.message.Exchange exchange = this.sender.createConsumeExchange(
                     consume, MEPConstants.IN_OUT_PATTERN);
-            FlowAttributesExchangeHelper.setFlowAttributes(
-                    ((org.ow2.petals.component.framework.message.ExchangeImpl) exchange).getMessageExchange(),
-                    this.flowAttributes);
+            ((org.ow2.petals.component.framework.message.ExchangeImpl) exchange).getMessageExchange()
+                    .setFlowAttributes(this.flowAttributes);
 
             // TODO: Add support for attachments
             // TODO: MUST be optimized generating directly an XML message by CXF or Activiti

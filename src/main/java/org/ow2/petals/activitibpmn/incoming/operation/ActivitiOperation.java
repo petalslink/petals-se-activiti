@@ -172,11 +172,7 @@ public abstract class ActivitiOperation implements ActivitiService {
             final DOMSource domSource = new DOMSource(incomingPayload);
 
             if (this.logger.isLoggable(Level.FINE)) {
-                try {
-                    this.logger.fine("*** incomingPayload = " + XMLPrettyPrinter.prettyPrint(domSource));
-                } catch (final TransformerException e) {
-                    throw new MessagingException(e);
-                }
+                this.logger.fine("*** incomingPayload = " + XMLPrettyPrinter.prettyPrint(incomingPayload));
             }
 
             if (this.logger.isLoggable(Level.FINE)) {
