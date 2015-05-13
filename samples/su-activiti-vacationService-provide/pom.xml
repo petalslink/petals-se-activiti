@@ -37,7 +37,7 @@
     <maven-dependency-plugin.failOnWarning>false</maven-dependency-plugin.failOnWarning>
     <maven-enforcer-plugin.rules.upperBound>false</maven-enforcer-plugin.rules.upperBound>
     <maven-enforcer-plugin.rules.dependency>false</maven-enforcer-plugin.rules.dependency>
-    <activiti.version>5.18.0-SNAPSHOT</activiti.version>
+    <activiti.version>5.18.0-PETALS-0-SNAPSHOT</activiti.version>
   </properties>
 
    <dependencies>
@@ -49,7 +49,7 @@
       
       <!-- To test the process definition we must use our own Activiti engine-->
       <dependency>
-         <groupId>org.activiti</groupId>
+         <groupId>org.ow2.petals.activiti</groupId>
          <artifactId>activiti-engine</artifactId>
          <version>${activiti.version}</version>
          <scope>test</scope>
@@ -63,7 +63,7 @@
          </exclusions>
       </dependency>
       <dependency>
-         <groupId>org.activiti</groupId>
+         <groupId>org.ow2.petals.activiti</groupId>
          <artifactId>activiti-cxf</artifactId>
          <version>${activiti.version}</version>
          <scope>test</scope>
