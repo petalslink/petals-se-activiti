@@ -160,7 +160,18 @@
                <groupId>xml-apis</groupId>
                <artifactId>xml-apis</artifactId>
             </exclusion>
+            <exclusion>
+               <!-- XJC must be aligned with JAXB Implementation -->
+               <groupId>com.sun.xml.bind</groupId>
+               <artifactId>jaxb-xjc</artifactId>
+            </exclusion>
          </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>com.sun.xml.bind</groupId>
+         <artifactId>jaxb-xjc</artifactId>
+         <version>2.2.2</version>
+         <scope>runtime</scope>
       </dependency>
       <dependency>
          <!-- Dependency required to get log traces of Activiti engine -->
