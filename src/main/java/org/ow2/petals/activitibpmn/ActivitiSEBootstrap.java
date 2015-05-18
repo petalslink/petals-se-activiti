@@ -40,8 +40,6 @@ import static org.ow2.petals.activitibpmn.ActivitiSEConstants.DBServer.JDBC_URL;
 import static org.ow2.petals.activitibpmn.ActivitiSEConstants.DBServer.JDBC_USERNAME;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Enumeration;
@@ -184,12 +182,10 @@ public class ActivitiSEBootstrap extends DefaultBootstrap {
 
         if (value != null && !value.trim().isEmpty()) {
             // Check that the given value is an URL
-            try {
-                new URL(value);
-            } catch (final MalformedURLException e) {
-                throw new InvalidAttributeValueException("Invalid value for attribute '" + ATTR_NAME_JDBC_URL
-                        + "': The value must be an URL.");
-            }
+
+            // TODO: We can't use 'new URL(value)' to check if the value is an URL because it does not support the H2
+            // JDBC URL: 'jdbc:h2:tcp://localhost/mem:activiti'
+            // TODO: Add the right check
             this.setParam(JDBC_URL, value);
         } else {
             this.setParam(JDBC_URL, null);
