@@ -228,8 +228,8 @@
 
    <target name="launchContainer">
       <replaceregexp file="${petals.home}/conf/loggers.properties"
-                     match="org.ow2.petals.kernel.logging.PetalsFileHandler.level.*"
-                     replace="org.ow2.petals.kernel.logging.PetalsFileHandler.level=FINEST"
+                     match="org.ow2.petals.log.handler.PetalsFileHandler.level.*"
+                     replace="org.ow2.petals.log.handler.PetalsFileHandler.level=FINEST"
                      byline="true" />
       <replaceregexp file="${petals.home}/conf/loggers.properties"
                      match="Petals.Container.Components.level.*"
