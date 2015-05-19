@@ -653,6 +653,12 @@ declare namespace ns2='http://petals.ow2.org/samples/se-bpmn/vacationService';
 //soap:Envelope/soap:Body/ns2:newVacationResponse/ns1:vacationRequestId</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>Validate vacation request</con:targetStep><con:targetPath>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
 declare namespace ns1='http://petals.ow2.org/samples/se-bpmn/vacationRequest';
 declare namespace ns2='http://petals.ow2.org/samples/se-bpmn/vacationService';
+//soap:Envelope/soap:Body/ns2:validationRequest/ns1:vacationRequestId</con:targetPath></con:transfers><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" entitize="false" transferToAll="false"><con:name>into 2nd validation request</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>Create vacation request</con:sourceStep><con:sourcePath>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns1='http://petals.ow2.org/samples/se-bpmn/vacationRequest';
+declare namespace ns2='http://petals.ow2.org/samples/se-bpmn/vacationService';
+//soap:Envelope/soap:Body/ns2:newVacationResponse/ns1:vacationRequestId</con:sourcePath><con:targetType>Request</con:targetType><con:targetStep>2nd vacation request validation</con:targetStep><con:targetPath>declare namespace soap='http://schemas.xmlsoap.org/soap/envelope/';
+declare namespace ns1='http://petals.ow2.org/samples/se-bpmn/vacationRequest';
+declare namespace ns2='http://petals.ow2.org/samples/se-bpmn/vacationService';
 //soap:Envelope/soap:Body/ns2:validationRequest/ns1:vacationRequestId</con:targetPath></con:transfers></con:config></con:testStep><con:testStep type="request" name="Kermit has one task in its basket"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>TaskServiceSoapBinding</con:interface><con:operation>getTasks</con:operation><con:request name="Kermit has one task in its basket"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8084/petals/services/taskService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://petals.ow2.org/components/activiti/generic/1.0">
    <soapenv:Header/>
    <soapenv:Body>
