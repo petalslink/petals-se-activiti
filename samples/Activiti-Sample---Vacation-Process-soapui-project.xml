@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project activeEnvironment="Default" name="Activiti Sample - Vacation Process" resourceRoot="" soapui-version="5.0.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="vacationBinding" type="wsdl" bindingName="{http://petals.ow2.org/samples/se-bpmn/vacationService}vacationBinding" soapVersion="1_1" anonymous="optional" definition="file:/home/cdeneux/workspace/petals-trunk/components-sls/components/petals-se-bpmn2/samples/su-activiti-vacationService-provide/src/main/resources/jbi/vacationService.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/home/cdeneux/workspace/petals-trunk/components-sls/components/petals-se-bpmn2/samples/su-activiti-vacationService-provide/src/main/resources/jbi/vacationService.wsdl"><con:part><con:url>file:/home/cdeneux/workspace/petals-trunk/components-sls/components/petals-se-bpmn2/samples/su-activiti-vacationService-provide/src/main/resources/jbi/vacationService.wsdl</con:url><con:content><![CDATA[<!--Copyright (c) 2014-2015 Linagora
+<con:soapui-project activeEnvironment="Default" name="Activiti Sample - Vacation Process" resourceRoot="" soapui-version="5.0.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="vacationBinding" type="wsdl" bindingName="{http://petals.ow2.org/samples/se-bpmn/vacationService}vacationBinding" soapVersion="1_1" anonymous="optional" definition="/home/cdeneux/workspace/petals-4.3.x/petals-se-activiti/samples/su-activiti-vacationService-provide/src/main/resources/jbi/vacationService.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/home/cdeneux/workspace/petals-4.3.x/petals-se-activiti/samples/su-activiti-vacationService-provide/src/main/resources/jbi/vacationService.wsdl"><con:part><con:url>file:/home/cdeneux/workspace/petals-4.3.x/petals-se-activiti/samples/su-activiti-vacationService-provide/src/main/resources/jbi/vacationService.wsdl</con:url><con:content><![CDATA[<!--Copyright (c) 2014-2015 Linagora
  
  This program/library is free software: you can redistribute it and/or modify
  it under the terms of the GNU Lesser General Public License as published by
@@ -91,6 +91,15 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element name="unexpectedUser">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element ref="vacationRequest:vacationRequestId" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="userId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="taskId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
     </xsd:schema>
   </wsdl:types>
   <!--======================== MESSAGES =======================================-->
@@ -118,6 +127,9 @@
   <wsdl:message name="vacationRequestAlreadyValidated">
     <wsdl:part name="fault" element="vacationService:vacationRequestAlreadyValidated"/>
   </wsdl:message>
+  <wsdl:message name="unexpectedUser">
+    <wsdl:part name="fault" element="vacationService:unexpectedUser"/>
+  </wsdl:message>
   <!--======================== PORT TYPE (SU jbi.xml interface-name)===============-->
   <wsdl:portType name="vacation">
     <wsdl:operation name="new">
@@ -129,6 +141,7 @@
       <wsdl:output message="vacationService:validationResponse"/>
       <wsdl:fault message="vacationService:vacationRequestAlreadyValidated" name="vacationRequestAlreadyValidated"/>
       <wsdl:fault message="vacationService:vacationRequestIdUnknown" name="vacationRequestIdUnknown"/>
+      <wsdl:fault message="vacationService:unexpectedUser" name="unexpectedUser"/>
     </wsdl:operation>
     <wsdl:operation name="update">
       <wsdl:input message="vacationService:updateRequest"/>
@@ -176,6 +189,10 @@
         <bpmn:fault name="TaskCompletedException">vacationRequestAlreadyValidated.xsl</bpmn:fault>
         <soap:fault name="vacationRequestAlreadyValidated" use="literal"/>
       </wsdl:fault>
+      <wsdl:fault name="unexpectedUser">
+        <bpmn:fault name="UnexpectedUserException">unexpectedUser.xsl</bpmn:fault>
+        <soap:fault name="unexpectedUser" use="literal"/>
+      </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="update">
       <soap:operation soapAction="http://petals.ow2.org/samples/se-bpmn/vacationService/updateVacationRequest"/>
@@ -186,7 +203,7 @@
       <bpmn:variable name="startDate">/*[local-name()='vacationUpdateRequest']/*[local-name()='start-date']</bpmn:variable>
       <bpmn:variable name="vacationMotivation">/*[local-name()='vacationUpdateRequest']/*[local-name()='reason']</bpmn:variable>
       <bpmn:variable name="resendRequest">/*[local-name()='vacationUpdateRequest']/*[local-name()='confirmed']</bpmn:variable>
-      <bpmn:output>ajusterDemandeResponse.xsl</bpmn:output>
+      <bpmn:output>adjustRequestResponse.xsl</bpmn:output>
       <wsdl:input>
         <soap:body use="literal"/>
       </wsdl:input>
@@ -205,7 +222,7 @@
       <soap:address location="http://localhost:9003/vacationService"/>
     </wsdl:port>
   </wsdl:service>
-</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:/home/cdeneux/workspace/petals-trunk/components-sls/components/petals-se-bpmn2/samples/su-activiti-vacationService-provide/src/main/resources/jbi/vacationRequest.xsd</con:url><con:content><![CDATA[<!--Copyright (c) 2015 Linagora
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:/home/cdeneux/workspace/petals-4.3.x/petals-se-activiti/samples/su-activiti-vacationService-provide/src/main/resources/jbi/vacationRequest.xsd</con:url><con:content><![CDATA[<!--Copyright (c) 2015 Linagora
  
  This program/library is free software: you can redistribute it and/or modify
  it under the terms of the GNU Lesser General Public License as published by
@@ -220,7 +237,7 @@
  You should have received a copy of the GNU Lesser General Public License
  along with this program/library; If not, see <http://www.gnu.org/licenses/>
  for the GNU Lesser General Public License version 2.1.-->
-<xsd:schema targetNamespace="http://petals.ow2.org/samples/se-bpmn/vacationRequest" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:vacationRequest="http://petals.ow2.org/samples/se-bpmn/vacationRequest">
+<xsd:schema targetNamespace="http://petals.ow2.org/samples/se-bpmn/vacationRequest" elementFormDefault="qualified" jaxb:version="2.1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:vacationRequest="http://petals.ow2.org/samples/se-bpmn/vacationRequest">
   <xsd:element name="vacationRequest" type="vacationRequest:vacationRequestType"/>
   <xsd:complexType name="vacationRequestType">
     <xsd:sequence>
@@ -231,7 +248,7 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:element name="vacationRequestId" type="xsd:string"/>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8084/petals/services/vacationService</con:endpoint></con:endpoints><con:operation isOneWay="false" action="http://petals.ow2.org/samples/se-bpmn/vacationService/newVacationRequest" name="new" bindingOperationName="new" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8084/petals/services/vacationService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vac="http://petals.ow2.org/samples/se-bpmn/vacationRequest">
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8084/petals/services/vacationService</con:endpoint><con:endpoint>http://localhost:9003/vacationService</con:endpoint></con:endpoints><con:operation isOneWay="false" action="http://petals.ow2.org/samples/se-bpmn/vacationService/newVacationRequest" name="new" bindingOperationName="new" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8084/petals/services/vacationService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vac="http://petals.ow2.org/samples/se-bpmn/vacationRequest">
    <soapenv:Header/>
    <soapenv:Body>
       <vac:vacationRequest>
@@ -258,7 +275,7 @@
    <soapenv:Body>
       <vac:validationRequest>
          <!--You may enter the following 4 items in any order-->
-         <vac1:vacationRequestId>83</vac1:vacationRequestId>
+         <vac1:vacationRequestId>113</vac1:vacationRequestId>
          <approved-by>kermit</approved-by>
          <!--Optional:-->
          <rejection-reason>?</rejection-reason>

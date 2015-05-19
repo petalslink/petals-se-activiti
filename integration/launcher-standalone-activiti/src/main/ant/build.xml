@@ -21,6 +21,7 @@
    <property name="activiti-db.file" value="/tmp/activiti.db" />
 
    <target name="startDatabaseActiviti">
+      <delete file="${activiti-db.file}.mv.db" />
       <!-- Start Database Activiti -->
       <java jar="${com.h2database:h2:jar}" fork="true">
          <arg value="-tcp" />
@@ -28,9 +29,7 @@
    </target>
 
    <!-- Target : Prepare -->
-   <target name="prepare">
-      <delete file="${activiti-db.file}.mv.db" />
-   </target>
+   <target name="prepare" />
 
    <!-- Target : Deploy -->
    <target name="deploy">
@@ -98,6 +97,14 @@
 
       <exec executable="mvn" searchpath="true" failonerror="yes" failifexecutionfails="yes">
          <arg line="-B -s${basedir}/settings.xml soapui:test -DtestCase=&quot;Nominal TestCase with adjustment&quot;" />
+      </exec>
+
+      <exec executable="mvn" searchpath="true" failonerror="yes" failifexecutionfails="yes">
+         <arg line="-B -s${basedir}/settings.xml soapui:test -DtestCase=&quot;Faulty TestCase - Unexpected validator&quot;" />
+      </exec>
+
+      <exec executable="mvn" searchpath="true" failonerror="yes" failifexecutionfails="yes">
+         <arg line="-B -s${basedir}/settings.xml soapui:test -DtestCase=&quot;Faulty TestCase - Unexpected vacation request id&quot;" />
       </exec>
 
    </target>
