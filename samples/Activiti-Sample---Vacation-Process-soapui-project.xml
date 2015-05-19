@@ -246,10 +246,10 @@
    <soapenv:Header/>
    <soapenv:Body>
       <vac:vacationUpdateRequest>
-         <vac1:enquirer>gonzo</vac1:enquirer>
+         <vac1:enquirer>foozie</vac1:enquirer>
          <vac1:day-number>10</vac1:day-number>
          <vac1:start-date>2015-05-03</vac1:start-date>
-         <vac1:vacationRequestId>60099</vac1:vacationRequestId>
+         <vac1:vacationRequestId>83</vac1:vacationRequestId>
          <confirmed>true</confirmed>
       </vac:vacationUpdateRequest>
    </soapenv:Body>
@@ -258,7 +258,7 @@
    <soapenv:Body>
       <vac:validationRequest>
          <!--You may enter the following 4 items in any order-->
-         <vac1:vacationRequestId>60099</vac1:vacationRequestId>
+         <vac1:vacationRequestId>83</vac1:vacationRequestId>
          <approved-by>kermit</approved-by>
          <!--Optional:-->
          <rejection-reason>?</rejection-reason>
@@ -270,7 +270,7 @@
    <soapenv:Body>
       <vac:validationRequest>
          <!--You may enter the following 4 items in any order-->
-         <vac1:vacationRequestId>60099</vac1:vacationRequestId>
+         <vac1:vacationRequestId>83</vac1:vacationRequestId>
          <approved-by>kermit</approved-by>
          <!--Optional:-->
          <rejection-reason>Delivery week of your project</rejection-reason>
@@ -544,7 +544,111 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:element name="vacationRequestId" type="xsd:string"/>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://cdeneux-laptop:8088/mockArchiveService</con:endpoint><con:endpoint>http://localhost:9003/archiveService</con:endpoint><con:endpoint>petals:///{http://petals.ow2.org/samples/se-bpmn/archiveService}archive</con:endpoint></con:endpoints><con:operation isOneWay="false" action="http://petals.ow2.org/samples/services/archive" name="archiveVacationRequest" bindingOperationName="archiveVacationRequest" inputName="archiveVacationRequest" sendsAttachments="false" anonymous="optional" type="Request-Response" receivesAttachments="false"><con:settings/></con:operation></con:interface><con:mockService port="8088" path="/mockNotifyVacationService" host="cdeneux-laptop" name="notifyVacationBinding MockService"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:mockOperation name="newVacationRequest" interface="notifyVacationBinding" operation="newVacationRequest"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:not="http://petals.ow2.org/samples/se-bpmn/notifyVacationService">
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://cdeneux-laptop:8088/mockArchiveService</con:endpoint><con:endpoint>http://localhost:9003/archiveService</con:endpoint><con:endpoint>petals:///{http://petals.ow2.org/samples/se-bpmn/archiveService}archive</con:endpoint></con:endpoints><con:operation isOneWay="false" action="http://petals.ow2.org/samples/services/archive" name="archiveVacationRequest" bindingOperationName="archiveVacationRequest" inputName="archiveVacationRequest" sendsAttachments="false" anonymous="optional" type="Request-Response" receivesAttachments="false"><con:settings/></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="TaskServiceSoapBinding" type="wsdl" bindingName="{http://petals.ow2.org/components/activiti/generic/1.0}TaskServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="file:/home/cdeneux/workspace/petals-4.3.x/petals-se-activiti/src/main/resources/component.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/home/cdeneux/workspace/petals-4.3.x/petals-se-activiti/src/main/resources/component.wsdl"><con:part><con:url>file:/home/cdeneux/workspace/petals-4.3.x/petals-se-activiti/src/main/resources/component.wsdl</con:url><con:content><![CDATA[<!--Copyright (c) 2015 Linagora
+
+ This program/library is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 2.1 of the License, or (at your
+ option) any later version.
+
+ This program/library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program/library; If not, see <http://www.gnu.org/licenses/>
+ for the GNU Lesser General Public License version 2.1.-->
+<wsdl:definitions name="ActivitiGenericWsdl" targetNamespace="http://petals.ow2.org/components/activiti/generic/1.0" xmlns:activiti="http://petals.ow2.org/components/activiti/generic/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="http://petals.ow2.org/components/activiti/generic/1.0">
+      <xsd:element name="getTasks">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="active" type="xsd:boolean" maxOccurs="1" minOccurs="0" default="true">
+              <xsd:annotation>
+                <xsd:documentation>The task state (true=active, false=inactive/completed). Default value: true</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="assignee" type="xsd:string" maxOccurs="1" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation>The user as candidate or assignee</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="process-instance-identifier" type="xsd:string" maxOccurs="1" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation>Identifier of the process instance of tasks to retrieve</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getTasksResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="tasks" type="activiti:Tasks" maxOccurs="1" minOccurs="1"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="Tasks">
+        <xsd:sequence>
+          <xsd:element name="task" type="activiti:Task" maxOccurs="unbounded" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Task">
+        <xsd:attribute name="process-definition-identifier" type="xsd:string" use="required"/>
+        <xsd:attribute name="process-instance-identifier" type="xsd:string" use="required"/>
+        <xsd:attribute name="task-identifier" type="xsd:string" use="required"/>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <!--Message Part-->
+  <wsdl:message name="getTasksRequest">
+    <wsdl:part name="getTasksRequest" element="activiti:getTasks"/>
+  </wsdl:message>
+  <wsdl:message name="getTasksResponse">
+    <wsdl:part name="getTasksResponse" element="activiti:getTasksResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="Task">
+    <wsdl:operation name="getTasks">
+      <wsdl:input message="activiti:getTasksRequest"/>
+      <wsdl:output message="activiti:getTasksResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="TaskServiceSoapBinding" type="activiti:Task">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getTasks">
+      <soap:operation soapAction="http://petals.ow2.org/components/activiti/generic/1.0/getTasks"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <!--This section must be overridden at the SU definition and the matching
+		Service and-->
+  <wsdl:service name="TaskService">
+    <wsdl:port name="autogenerate" binding="activiti:TaskServiceSoapBinding">
+      <soap:address location="autogenerate"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>autogenerate</con:endpoint></con:endpoints><con:operation isOneWay="false" action="http://petals.ow2.org/components/activiti/generic/1.0/getTasks" name="getTasks" bindingOperationName="getTasks" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Kermit's task basket"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8084/petals/services/taskService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://petals.ow2.org/components/activiti/generic/1.0">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:getTasks>
+         <ns:assignee>kermit</ns:assignee>
+      </ns:getTasks>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://petals.ow2.org/components/activiti/generic/1.0/getTasks"/><con:wsrmConfig version="1.2"/></con:call><con:call name="All active tasks"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8084/petals/services/taskService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://petals.ow2.org/components/activiti/generic/1.0">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:getTasks>
+         <ns:active>true</ns:active>
+      </ns:getTasks>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://petals.ow2.org/components/activiti/generic/1.0/getTasks"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:mockService port="8088" path="/mockNotifyVacationService" host="cdeneux-laptop" name="notifyVacationBinding MockService"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:mockOperation name="newVacationRequest" interface="notifyVacationBinding" operation="newVacationRequest"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:not="http://petals.ow2.org/samples/se-bpmn/notifyVacationService">
    <soapenv:Header/>
    <soapenv:Body>
       <not:okResponse>ok</not:okResponse>

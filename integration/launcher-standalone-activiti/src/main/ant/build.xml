@@ -29,7 +29,7 @@
 
    <!-- Target : Prepare -->
    <target name="prepare">
-      <delete file="${activiti-db.file}" />
+      <delete file="${activiti-db.file}.mv.db" />
    </target>
 
    <!-- Target : Deploy -->
@@ -93,7 +93,11 @@
       <echo message="Launching Activiti component tests..." />
 
       <exec executable="mvn" searchpath="true" failonerror="yes" failifexecutionfails="yes">
-         <arg line="-B -s${basedir}/settings.xml soapui:test -DtestCase=&quot;Nominal TestCase&quot;" />
+         <arg line="-B -s${basedir}/settings.xml soapui:test -DtestCase=&quot;Nominal TestCase without adjustment&quot;" />
+      </exec>
+
+      <exec executable="mvn" searchpath="true" failonerror="yes" failifexecutionfails="yes">
+         <arg line="-B -s${basedir}/settings.xml soapui:test -DtestCase=&quot;Nominal TestCase with adjustment&quot;" />
       </exec>
 
    </target>

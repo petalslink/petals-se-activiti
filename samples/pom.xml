@@ -33,6 +33,7 @@
     <module>su-SOAP-vacationService-consume</module>
     <module>su-SOAP-notifyVacationService-provide</module>
     <module>su-SOAP-archiveService-provide</module>
+    <module>su-SOAP-activitiIntegrationService-consume</module>
   </modules>
 
   <build>
