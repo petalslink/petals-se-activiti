@@ -18,9 +18,7 @@
    <property name="host1.ip" value="localhost" />
    <property name="host1.username" value="petals" />
    <property name="host1.password" value="petals" />
-   <property name="activiti-db.file" value="mem:activiti" />
-   <!-- For test purposes, use the following value to keep the Activiti Database-->
-   <!-- property name="activiti-db.file" value="tmp/activiti.db" /-->
+   <property name="activiti-db.file" value="/tmp/activiti.db" />
 
    <target name="startDatabaseActiviti">
       <!-- Start Database Activiti -->
@@ -30,8 +28,9 @@
    </target>
 
    <!-- Target : Prepare -->
-   <target name="prepare" />
-
+   <target name="prepare">
+      <delete file="${activiti-db.file}" />
+   </target>
 
    <!-- Target : Deploy -->
    <target name="deploy">
@@ -93,21 +92,9 @@
    <target name="run">
       <echo message="Launching Activiti component tests..." />
 
-      <parallel failonany="yes">
-         <sequential>
-            <exec executable="mvn" searchpath="true" failonerror="yes" failifexecutionfails="yes">
-               <arg line="-B -s${basedir}/settings.xml soapui:test -DtestCase=&quot;Nominal TestCase&quot;" />
-            </exec>
-         </sequential>
-      </parallel>
-
-      <fail message="SOAP component tests failed">
-         <condition>
-            <not>
-                <equals arg1="0" arg2="${result_https_client}" />
-            </not>
-         </condition>
-      </fail>
+      <exec executable="mvn" searchpath="true" failonerror="yes" failifexecutionfails="yes">
+         <arg line="-B -s${basedir}/settings.xml soapui:test -DtestCase=&quot;Nominal TestCase&quot;" />
+      </exec>
 
    </target>
 
@@ -209,7 +196,7 @@
             <param name="mockServiceAddress" value="http://localhost:8088/mockNotifyVacationService" />
          </antcall>
          <antcall target="waitMock">
-            <param name="mockServiceAddress" value="http://localhost:8088/mockNotifyVacationService" />
+            <param name="mockServiceAddress" value="http://localhost:8088/mockArchiveService" />
          </antcall>
       </parallel>
    </target>
@@ -221,7 +208,7 @@
             <param name="mockServiceAddress" value="http://localhost:8088/mockNotifyVacationService" />
          </antcall>
          <antcall target="stopMock">
-            <param name="mockServiceAddress" value="http://localhost:8088/mockNotifyVacationService" />
+            <param name="mockServiceAddress" value="http://localhost:8088/mockArchiveService" />
          </antcall>
       </parallel>
    </target>
@@ -246,19 +233,34 @@
 
       <antcall target="cleanAll" />
 
-      <parallel failonany="yes">
-         <antcall target="startDatabaseActiviti" />
-         <antcall target="startWebservices" />
-         <sequential>
-            <antcall target="prepare" />
-            <antcall target="deploy" />
-            <antcall target="waitWebservices" />
-            <antcall target="run" />
-            <antcall target="stopWebservices" />
-         </sequential>
-      </parallel>
-
-      <antcall target="cleanAll" />
+      <trycatch>
+         <try>
+            <parallel failonany="yes">
+               <daemons>
+                  <antcall target="startDatabaseActiviti" />
+               </daemons>
+               <antcall target="startWebservices" />
+               <sequential>
+                  <antcall target="prepare" />
+                  <antcall target="deploy" />
+                  <antcall target="waitWebservices" />
+                  <trycatch>
+                     <try>
+                        <antcall target="run" />
+                     </try>
+                     <finally>
+                        <antcall target="stopWebservices" />
+                     </finally>
+                  </trycatch>
+               </sequential>
+            </parallel>
+         </try>
+         <finally>
+            <!-- We force component uninstallation to avoid stack trace logged by SE Activiti when tests fail. The async job
+                 executor of SE Activiti try run SQL query on a database that is not running --> 
+            <antcall target="cleanAll" />
+         </finally>
+      </trycatch>
       <stopContainer name="${topology.container.name}" home="${petals.home}" />
 
    </target>

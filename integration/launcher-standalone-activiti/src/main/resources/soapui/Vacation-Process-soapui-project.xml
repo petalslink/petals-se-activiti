@@ -567,8 +567,8 @@ declare namespace ns2='http://petals.ow2.org/samples/se-bpmn/vacationService';
    <soapenv:Header/>
    <soapenv:Body>
       <vac:validationRequest>
-         <!--You may enter the following 4 items in any order-->
-         <vac1:vacationRequestId>7621</vac1:vacationRequestId>
+         <!-- vacationRequestId retrieved from the response of the vacation request creation -->
+         <vac1:vacationRequestId>22534</vac1:vacationRequestId>
          <approved-by>kermit</approved-by>
          <approval>true</approval>
       </vac:validationRequest>
