@@ -45,6 +45,14 @@
          <groupId>org.ow2.petals</groupId>
          <artifactId>petals-se-activiti</artifactId>
          <type>jbi-component</type>
+         <exclusions>
+            <exclusion>
+               <!-- For unit test we require the SL4J bridge Log4J until we use Java 6 -->
+               <!-- TODO: Remove this exclusion once moved to Java7 -->
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-jdk14</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
       
       <!-- To test the process definition we must use our own Activiti engine-->
@@ -69,6 +77,8 @@
          <scope>test</scope>
       </dependency>
       <dependency>
+         <!-- We prefer log4j as JUL because we can't configure the SimpleFormatter of JUL with Java6 -->
+         <!-- TODO: Replace log4j by JUL when moving to Java7 as SimpleFormatter is configurable -->
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-log4j12</artifactId>
          <version>1.7.6</version>

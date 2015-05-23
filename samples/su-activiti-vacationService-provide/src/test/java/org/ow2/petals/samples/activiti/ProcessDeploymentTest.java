@@ -19,22 +19,51 @@ package org.ow2.petals.samples.activiti;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.test.ActivitiRule;
 import org.activiti.engine.test.Deployment;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
 public class ProcessDeploymentTest {
     
+    @BeforeClass
+    public static void initLog() throws URISyntaxException {
+        final URL logCfg = Thread.currentThread().getContextClassLoader().getResource("log4j.properties");
+        assertNotNull("Log conf file not found", logCfg);
+        System.setProperty("log4j.configuration", logCfg.toString());
+    }
+
+    @AfterClass
+    public static void cleanLog() {
+        System.clearProperty("log4j.configuration");
+    }
+
     @Rule
     public final ActivitiRule activitiRule = new ActivitiRule();
-    
+
     @Test
     @Deployment(resources = {"jbi/vacationRequest.bpmn20.xml"})
-    public void theProcessIsDeployable() {
+    public void theProcessIsDeployableAndInstanciable() {
         final ProcessDefinition processDefinition = this.activitiRule.getRepositoryService()
                 .createProcessDefinitionQuery().processDefinitionKey("vacationRequest").singleResult();
         assertNotNull(processDefinition);
+
+        final Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("numberOfDays", 10);
+        variables.put("startDate", new Date());
+        variables.put("vacationMotivation", "Vacations");
+        final ProcessInstance processInstance = this.activitiRule.getRuntimeService().startProcessInstanceByKey(
+                "vacationRequest", variables);
+        assertNotNull(processInstance);
     }
 }
