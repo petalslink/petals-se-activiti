@@ -65,6 +65,7 @@ import org.ow2.petals.samples.se_bpmn.archivageservice.ArchiverResponse;
 import org.ow2.petals.samples.se_bpmn.vacationservice.AckResponse;
 import org.ow2.petals.samples.se_bpmn.vacationservice.Demande;
 import org.ow2.petals.samples.se_bpmn.vacationservice.DemandeDejaValidee;
+import org.ow2.petals.samples.se_bpmn.vacationservice.JiraPETALSSEACTIVITI4;
 import org.ow2.petals.samples.se_bpmn.vacationservice.Numero;
 import org.ow2.petals.samples.se_bpmn.vacationservice.NumeroDemandeInconnu;
 import org.ow2.petals.samples.se_bpmn.vacationservice.Validation;
@@ -86,6 +87,8 @@ public abstract class AbstractComponentTest extends AbstractTest {
     protected static final QName VACATION_SERVICE = new QName(VACATION_NAMESPACE, "demandeDeCongesService");
 
     protected static final String VACATION_ENDPOINT = "testEndpointName";
+
+    protected static final QName OPERATION_JIRA = new QName(VACATION_NAMESPACE, "jira_PETALSSEACTIVITI-4");
 
     protected static final QName OPERATION_DEMANDERCONGES = new QName(VACATION_NAMESPACE, "demanderConges");
 
@@ -121,11 +124,10 @@ public abstract class AbstractComponentTest extends AbstractTest {
 
     protected static final ComponentUnderTest COMPONENT_UNDER_TEST = new ComponentUnderTest()
             .addLogHandler(IN_MEMORY_LOG_HANDLER.getHandler())
-            // We disable the async job executor to have clean log traces, and because the process does not require it.
-            // To remove if the process require it
+            // The async job executor is required to process service set as asynchronous
             .setParameter(
                     new QName(ActivitiSEConstants.NAMESPACE_COMP, ActivitiSEConstants.ENGINE_ENABLE_JOB_EXECUTOR),
-                    Boolean.FALSE.toString())
+                    Boolean.TRUE.toString())
             .setParameter(
                     new QName(ActivitiSEConstants.NAMESPACE_COMP, ActivitiSEConstants.ENGINE_IDENTITY_SERVICE_CFG_FILE),
                     // Generate identity service configuration files
@@ -233,7 +235,7 @@ public abstract class AbstractComponentTest extends AbstractTest {
         try {
             final JAXBContext context = JAXBContext.newInstance(Demande.class, Validation.class, Numero.class,
                     AckResponse.class, NumeroDemandeInconnu.class, DemandeDejaValidee.class, Archiver.class,
-                    ArchiverResponse.class, GetTasks.class, GetTasksResponse.class);
+                    ArchiverResponse.class, GetTasks.class, GetTasksResponse.class, JiraPETALSSEACTIVITI4.class);
             UNMARSHALLER = context.createUnmarshaller();
             MARSHALLER = context.createMarshaller();
             MARSHALLER.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
