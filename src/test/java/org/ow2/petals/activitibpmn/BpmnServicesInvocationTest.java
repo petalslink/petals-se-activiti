@@ -1192,7 +1192,6 @@ public class BpmnServicesInvocationTest extends AbstractComponentTest {
      * <li>PETALSSEACTIVITI-5: process definition without user task.</li>
      * </ul>
      * </p>
-     * 
      */
     @Test
     public void jira_PETALSSEACTIVITI_4() throws Exception {
