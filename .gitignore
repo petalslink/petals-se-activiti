@@ -1,6 +1,5 @@
-/target
-/.settings
-/.checkstyle
-/.classpath
-/.project
-/target/
+.settings/
+.checkstyle
+.classpath
+.project
+target/
