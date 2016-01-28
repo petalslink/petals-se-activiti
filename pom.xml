@@ -23,7 +23,7 @@
       <artifactId>petals-components-parent</artifactId>
       <groupId>org.ow2.petals</groupId>
       <relativePath>../parent/pom.xml</relativePath>
-      <version>1.0.0.3</version>
+      <version>1.0.0.4-SNAPSHOT</version>
    </parent>
 	
 	<!-- ============== -->
