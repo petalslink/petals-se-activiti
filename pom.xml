@@ -58,6 +58,17 @@
       <maven-enforcer-plugin.rules.upperBound>false</maven-enforcer-plugin.rules.upperBound>
    </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.ow2.petals</groupId>
+        <artifactId>petals-message-exchange</artifactId>
+        <version>1.2.2.1-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+
    <dependencies>
       <dependency>
          <groupId>com.ebmwebsourcing.easycommons</groupId>
@@ -117,7 +128,6 @@
       <dependency>
          <groupId>org.ow2.petals</groupId>
          <artifactId>petals-message-exchange</artifactId>
-         <version>1.2.2.1-SNAPSHOT</version>
       </dependency>
       <dependency>
          <groupId>org.ow2.petals.activiti</groupId>
