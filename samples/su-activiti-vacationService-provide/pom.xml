@@ -21,7 +21,7 @@
   <parent>
     <artifactId>petals-activiti</artifactId>
     <groupId>org.ow2.petals.samples</groupId>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>4.3.2-SNAPSHOT</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
   
@@ -29,7 +29,6 @@
   <artifactId>su-activiti-vacationService-provide</artifactId>
   <packaging>jbi-service-unit</packaging>
   <name>su-activiti-vacationService-provide</name>
-  <version>4.3.0-SNAPSHOT</version>
   <description>su-activiti-vacationService-provide description.</description>
   
   <properties>
