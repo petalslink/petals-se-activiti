@@ -17,11 +17,6 @@
  */
 package org.ow2.petals.activitibpmn.incoming.operation.annotated;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +38,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ow2.petals.activitibpmn.AbstractTest;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.ActionIdNotFoundInModelException;
+import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.AttachmentMappingExpressionException;
+import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.AttachmentNameMissingException;
+import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.DuplicatedAttachmentException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.DuplicatedFaultMappingException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.DuplicatedOutputMappingException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.DuplicatedVariableException;
@@ -53,6 +51,7 @@ import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.Invali
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.InvalidOutputXslException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.MultipleBpmnOperationDefinedException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.NoActionIdMappingException;
+import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.NoAttachmentMappingException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.NoBpmnOperationDefinedException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.NoBpmnOperationException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.NoFaultMappingException;
@@ -746,7 +745,7 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * Check the parser against a WSDL containing BPMN annotations but the variable place holder is as following for the
      * BPMN actions 'userTask' and 'startEvent':
      * <ul>
-     * <li>variable tag missing (ie. no XML tag user id),</li>
+     * <li>variable tag missing (ie. variable is required by process definition but not declared in the WSDL),</li>
      * <li>variable name is missing,</li>
      * <li>variable name is empty,</li>
      * <li>variable placeholder is missing,</li>
@@ -851,6 +850,147 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
         assertTrue(missingVariablePlaceholderMappingOp2);
         assertTrue(emptyVariablePlaceholderMappingOp1);
         assertTrue(emptyVariablePlaceholderMappingOp2);
+        assertTrue(noBpmnOperationExceptionFound);
+    }
+
+    /**
+     * <p>
+     * Check the parser against a WSDL containing BPMN annotations but the attachment place holder is set to an invalid
+     * XPATH expression for the BPMN actions 'userTask' and 'startEvent'
+     * </p>
+     * <p>
+     * Expected results: An error occurs about the invalid expression of the attachment placeholder for both BPMN
+     * actions, and an error occurs about no valid annotated operation found.
+     * </p>
+     */
+    @Test
+    public void parse_WsdlWithAttachmentPlaceHolderInvalidExpr() throws SAXException, IOException {
+
+        assertEquals(0,
+                this.parser
+                        .parse(this.readWsdlDocument("parser/invalid-attachment-placeholder.wsdl"),
+                                Arrays.asList(this.readBpmnModel("parser/vacationRequest.bpmn20.xml")), SU_ROOT_PATH)
+                        .size());
+
+        final List<InvalidAnnotationException> encounteredErrors = this.parser.getEncounteredErrors();
+        assertEquals(3, encounteredErrors.size());
+        boolean invalidAttachmentMappingOp1 = false;
+        boolean invalidAttachmentMappingOp2 = false;
+        boolean noBpmnOperationExceptionFound = false;
+        for (final InvalidAnnotationException exception : encounteredErrors) {
+            if (exception instanceof AttachmentMappingExpressionException) {
+                final AttachmentMappingExpressionException expectedException = (AttachmentMappingExpressionException) exception;
+                if (BPMN_OP_DEMANDER_CONGES.equals(expectedException.getWsdlOperation())) {
+                    invalidAttachmentMappingOp1 = true;
+                    assertEquals("signature", expectedException.getAttachmentName());
+                } else if (BPMN_OP_VALIDER_DEMANDE.equals(expectedException.getWsdlOperation())) {
+                    invalidAttachmentMappingOp2 = true;
+                    assertEquals("mngr-signature", expectedException.getAttachmentName());
+                } else {
+                    fail("Unexpected operation: " + expectedException.getWsdlOperation());
+                }
+            } else if (exception instanceof NoBpmnOperationException) {
+                noBpmnOperationExceptionFound = true;
+            } else {
+                fail("Unexpected error: " + exception.getClass());
+            }
+        }
+        assertTrue(invalidAttachmentMappingOp1);
+        assertTrue(invalidAttachmentMappingOp2);
+        assertTrue(noBpmnOperationExceptionFound);
+    }
+
+    /**
+     * <p>
+     * Check the parser against a WSDL containing BPMN annotations but the attachment place holder is as following for
+     * the BPMN actions 'userTask' and 'startEvent':
+     * <ul>
+     * <li>attachment name is missing,</li>
+     * <li>attachment name is empty,</li>
+     * <li>attachment placeholder is missing,</li>
+     * <li>attachment placeholder is empty.</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Expected results: An error occurs about a missing or empty attachment placeholder for both BPMN actions, and an
+     * error occurs about no valid annotated operation found.
+     * </p>
+     */
+    @Test
+    public void parse_WsdlWithAttachmentPlaceHolderMissing() throws SAXException, IOException {
+
+        assertEquals(0,
+                this.parser
+                        .parse(this.readWsdlDocument("parser/missing-and-empty-attachment-expression.wsdl"),
+                                Arrays.asList(this.readBpmnModel("parser/vacationRequest.bpmn20.xml")), SU_ROOT_PATH)
+                        .size());
+
+        final List<InvalidAnnotationException> encounteredErrors = this.parser.getEncounteredErrors();
+        assertEquals(9, encounteredErrors.size());
+        boolean missingAttachmentNameMappingOp1 = false;
+        boolean missingAttachmentNameMappingOp2 = false;
+        boolean emptyAttachmentNameMappingOp1 = false;
+        boolean emptyAttachmentNameMappingOp2 = false;
+        boolean missingAttachmentPlaceholderMappingOp1 = false;
+        boolean missingAttachmentPlaceholderMappingOp2 = false;
+        boolean emptyAttachmentPlaceholderMappingOp1 = false;
+        boolean emptyAttachmentPlaceholderMappingOp2 = false;
+        boolean noBpmnOperationExceptionFound = false;
+        for (final InvalidAnnotationException exception : encounteredErrors) {
+            if (exception instanceof AttachmentNameMissingException) {
+                final AttachmentNameMissingException expectedException = (AttachmentNameMissingException) exception;
+                if (new QName(WSDL_TARGET_NAMESPACE, "demanderConges_missingAttachmentName")
+                        .equals(expectedException.getWsdlOperation())) {
+                    missingAttachmentNameMappingOp1 = true;
+                } else if (new QName(WSDL_TARGET_NAMESPACE, "validerDemande_missingAttachmentName")
+                        .equals(expectedException.getWsdlOperation())) {
+                    missingAttachmentNameMappingOp2 = true;
+                } else if (new QName(WSDL_TARGET_NAMESPACE, "demanderConges_emptyAttachmentName")
+                        .equals(expectedException.getWsdlOperation())) {
+                    emptyAttachmentNameMappingOp1 = true;
+                } else if (new QName(WSDL_TARGET_NAMESPACE, "validerDemande_emptyAttachmentName")
+                        .equals(expectedException.getWsdlOperation())) {
+                    emptyAttachmentNameMappingOp2 = true;
+                } else {
+                    fail("Unexpected operation: "
+                            + ((InvalidAnnotationForOperationException) exception).getWsdlOperation());
+                }
+            } else if (exception instanceof NoAttachmentMappingException) {
+                final NoAttachmentMappingException expectedException = (NoAttachmentMappingException) exception;
+                if (new QName(WSDL_TARGET_NAMESPACE, "demanderConges_noAttachmentContent")
+                        .equals(expectedException.getWsdlOperation())) {
+                    missingAttachmentPlaceholderMappingOp1 = true;
+                    assertEquals("signature", expectedException.getAttachmentName());
+                } else if (new QName(WSDL_TARGET_NAMESPACE, "validerDemande_noAttachmentContent")
+                        .equals(expectedException.getWsdlOperation())) {
+                    missingAttachmentPlaceholderMappingOp2 = true;
+                    assertEquals("mngr-signature", expectedException.getAttachmentName());
+                } else if (new QName(WSDL_TARGET_NAMESPACE, "demanderConges_emptyAttachmentContent")
+                        .equals(expectedException.getWsdlOperation())) {
+                    emptyAttachmentPlaceholderMappingOp1 = true;
+                    assertEquals("signature", expectedException.getAttachmentName());
+                } else if (new QName(WSDL_TARGET_NAMESPACE, "validerDemande_emptyAttachmentContent")
+                        .equals(expectedException.getWsdlOperation())) {
+                    emptyAttachmentPlaceholderMappingOp2 = true;
+                    assertEquals("mngr-signature", expectedException.getAttachmentName());
+                } else {
+                    fail("Unexpected operation: "
+                            + ((InvalidAnnotationForOperationException) exception).getWsdlOperation());
+                }
+            } else if (exception instanceof NoBpmnOperationException) {
+                noBpmnOperationExceptionFound = true;
+            } else {
+                fail("Unexpected error: " + exception.getClass());
+            }
+        }
+        assertTrue(missingAttachmentNameMappingOp1);
+        assertTrue(missingAttachmentNameMappingOp2);
+        assertTrue(emptyAttachmentNameMappingOp1);
+        assertTrue(emptyAttachmentNameMappingOp2);
+        assertTrue(missingAttachmentPlaceholderMappingOp1);
+        assertTrue(missingAttachmentPlaceholderMappingOp2);
+        assertTrue(emptyAttachmentPlaceholderMappingOp1);
+        assertTrue(emptyAttachmentPlaceholderMappingOp2);
         assertTrue(noBpmnOperationExceptionFound);
     }
 
@@ -1044,6 +1184,53 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
         }
         assertTrue(duplicatedVariableMappingOp1);
         assertTrue(duplicatedVariableMappingOp2);
+        assertTrue(noBpmnOperationExceptionFound);
+    }
+
+    /**
+     * <p>
+     * Check the parser against a WSDL containing BPMN annotations but an attachment declaration is duplicated for the
+     * BPMN actions 'userTask' and 'startEvent'
+     * </p>
+     * <p>
+     * Expected results: An error occurs about the attachment duplication for both BPMN actions, and an error occurs
+     * about no valid annotated operation found.
+     * </p>
+     */
+    @Test
+    public void parse_WsdlWithDuplicatedAttachments() throws SAXException, IOException {
+
+        assertEquals(0,
+                this.parser
+                        .parse(this.readWsdlDocument("parser/duplicated-attachments.wsdl"),
+                                Arrays.asList(this.readBpmnModel("parser/vacationRequest.bpmn20.xml")), SU_ROOT_PATH)
+                        .size());
+
+        final List<InvalidAnnotationException> encounteredErrors = this.parser.getEncounteredErrors();
+        assertEquals(3, encounteredErrors.size());
+        boolean duplicatedAttachmentMappingOp1 = false;
+        boolean duplicatedAttachmentMappingOp2 = false;
+        boolean noBpmnOperationExceptionFound = false;
+        for (final InvalidAnnotationException exception : encounteredErrors) {
+            if (exception instanceof DuplicatedAttachmentException) {
+                final DuplicatedAttachmentException expectedException = ((DuplicatedAttachmentException) exception);
+                if (BPMN_OP_DEMANDER_CONGES.equals(expectedException.getWsdlOperation())) {
+                    duplicatedAttachmentMappingOp1 = true;
+                    assertEquals("signature", expectedException.getAttachmentName());
+                } else if (BPMN_OP_VALIDER_DEMANDE.equals(expectedException.getWsdlOperation())) {
+                    duplicatedAttachmentMappingOp2 = true;
+                    assertEquals("mngr-signature", expectedException.getAttachmentName());
+                } else {
+                    fail("Unexpected operation: " + expectedException.getWsdlOperation());
+                }
+            } else if (exception instanceof NoBpmnOperationException) {
+                noBpmnOperationExceptionFound = true;
+            } else {
+                fail("Unexpected error: " + exception.getClass());
+            }
+        }
+        assertTrue(duplicatedAttachmentMappingOp1);
+        assertTrue(duplicatedAttachmentMappingOp2);
         assertTrue(noBpmnOperationExceptionFound);
     }
 

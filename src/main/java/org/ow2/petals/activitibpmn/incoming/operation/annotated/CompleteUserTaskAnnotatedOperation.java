@@ -74,6 +74,8 @@ public class CompleteUserTaskAnnotatedOperation extends AnnotatedOperation {
      *            The placeholder of BPMN user identifier associated to the BPMN operation. Not <code>null</code>.
      * @param variables
      *            The definition of variables of the operation
+     * @param attachments
+     *            The definition of attachments of the operation
      * @param outputTemplate
      *            The output XSLT style-sheet compiled
      * @param faultTemplates
@@ -83,10 +85,11 @@ public class CompleteUserTaskAnnotatedOperation extends AnnotatedOperation {
      */
     public CompleteUserTaskAnnotatedOperation(final QName wsdlOperationName, final String processDefinitionId,
             final String bpmnAction, final XPathExpression processInstanceIdHolder, final XPathExpression userIdHolder,
-            final Map<String, XPathExpression> variables, final Templates outputTemplate,
-            final Map<String, Templates> faultTemplates) throws InvalidAnnotationForOperationException {
+            final Map<String, XPathExpression> variables, final Map<String, XPathExpression> attachments,
+            final Templates outputTemplate, final Map<String, Templates> faultTemplates)
+            throws InvalidAnnotationForOperationException {
         super(wsdlOperationName, processDefinitionId, bpmnAction, processInstanceIdHolder, userIdHolder, variables,
-                outputTemplate, faultTemplates);
+                attachments, outputTemplate, faultTemplates);
     }
 
     @Override
@@ -121,7 +124,7 @@ public class CompleteUserTaskAnnotatedOperation extends AnnotatedOperation {
             throw new ActionIdNotFoundInModelException(this.getWsdlOperation(), this.getActionId(),
                     this.getProcessDefinitionId());
         } else {
-            if (formPropertyList != null && formPropertyList.size() > 0) {
+            if (formPropertyList != null && !formPropertyList.isEmpty()) {
                 for (final FormProperty formPropertie : formPropertyList) {
                     this.getVariableTypes().put(formPropertie.getId(), formPropertie);
                 }

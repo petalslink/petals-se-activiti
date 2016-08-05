@@ -44,6 +44,9 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.activiti.bpmn.model.BpmnModel;
+import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.AttachmentMappingExpressionException;
+import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.AttachmentNameMissingException;
+import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.DuplicatedAttachmentException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.DuplicatedFaultMappingException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.DuplicatedOutputMappingException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.DuplicatedVariableException;
@@ -53,6 +56,7 @@ import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.Invali
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.InvalidFaultXslException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.InvalidOutputXslException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.MultipleBpmnOperationDefinedException;
+import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.NoAttachmentMappingException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.NoBpmnOperationDefinedException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.NoBpmnOperationException;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.exception.NoFaultMappingException;
@@ -127,6 +131,16 @@ public class AnnotatedWsdlParser {
      * Local part of the attribute of {@link #BPMN_ANNOTATION_VARIABLE} containing the variable name
      */
     private static final String BPMN_ANNOTATION_VARIABLE_NAME = "name";
+
+    /**
+     * Local part of the annotation tag associated to an attachment
+     */
+    private static final String BPMN_ANNOTATION_ATTACHMENT = "attachment";
+
+    /**
+     * Local part of the attribute of {@link #BPMN_ANNOTATION_ATTACHMENT} containing the attachment name
+     */
+    private static final String BPMN_ANNOTATION_ATTACHMENT_NAME = "name";
 
     /**
      * Local part of the annotation tag associated an output
@@ -279,7 +293,11 @@ public class AnnotatedWsdlParser {
         final XPathExpression bpmnUserId = this.getUserIdXpathExpr(wsdlOperation, wsdlOperationName, xpathFactory);
 
         // Get the list of nodes "bpmn:variable"
-        final Map<String, XPathExpression> bpmnOperationVariables = getVariableXpathExpr(wsdlOperation,
+        final Map<String, XPathExpression> bpmnOperationVariables = this.getVariablesXpathExpr(wsdlOperation,
+                wsdlOperationName, xpathFactory);
+
+        // Get the list of nodes "bpmn:attachment"
+        final Map<String, XPathExpression> bpmnOperationAttachments = this.getAttachmentsXpathExpr(wsdlOperation,
                 wsdlOperationName, xpathFactory);
 
         // Get the output "bpmn:output"
@@ -293,10 +311,12 @@ public class AnnotatedWsdlParser {
         final AnnotatedOperation annotatedOperation;
         if (StartEventAnnotatedOperation.BPMN_ACTION.equals(action)) {
             annotatedOperation = new StartEventAnnotatedOperation(wsdlOperationName, processDefinitionKey, actionId,
-                    bpmnProcessInstanceId, bpmnUserId, bpmnOperationVariables, bpmnOutputTemplate, bpmnFaultTemplates);
+                    bpmnProcessInstanceId, bpmnUserId, bpmnOperationVariables, bpmnOperationAttachments,
+                    bpmnOutputTemplate, bpmnFaultTemplates);
         } else if (CompleteUserTaskAnnotatedOperation.BPMN_ACTION.equals(action)) {
             annotatedOperation = new CompleteUserTaskAnnotatedOperation(wsdlOperationName, processDefinitionKey,
-                    actionId, bpmnProcessInstanceId, bpmnUserId, bpmnOperationVariables, bpmnOutputTemplate,
+                    actionId, bpmnProcessInstanceId, bpmnUserId, bpmnOperationVariables, bpmnOperationAttachments,
+                    bpmnOutputTemplate,
                     bpmnFaultTemplates);
         } else {
             throw new UnsupportedActionException(wsdlOperationName, action);
@@ -392,13 +412,11 @@ public class AnnotatedWsdlParser {
      *            The name of the binding operation
      * @param xpathFactory
      *            The XPath factory
-     * @return The output XSLT style-sheet compiled
+     * @return The XPath expression to select the variable values
      * @throws InvalidAnnotationForOperationException
      */
-    private Map<String, XPathExpression> getVariableXpathExpr(final Node wsdlOperation,
- final QName wsdlOperationName,
-            final XPathFactory xpathFactory)
-            throws InvalidAnnotationForOperationException {
+    private Map<String, XPathExpression> getVariablesXpathExpr(final Node wsdlOperation, final QName wsdlOperationName,
+            final XPathFactory xpathFactory) throws InvalidAnnotationForOperationException {
 
         final NodeList bpmnVariableList = ((Element) wsdlOperation).getElementsByTagNameNS(SCHEMA_BPMN_ANNOTATIONS,
                 BPMN_ANNOTATION_VARIABLE);
@@ -432,6 +450,56 @@ public class AnnotatedWsdlParser {
         }
 
         return bpmnOperationVariables;
+    }
+
+    /**
+     * Parse the attachments defined for the binding operation
+     * 
+     * @param wsdlOperation
+     *            The node of the binding operation to parse
+     * @param wsdlOperationName
+     *            The name of the binding operation
+     * @param xpathFactory
+     *            The XPath factory
+     * @return The XPath expression to select the attachments
+     * @throws InvalidAnnotationForOperationException
+     */
+    private Map<String, XPathExpression> getAttachmentsXpathExpr(final Node wsdlOperation,
+            final QName wsdlOperationName, final XPathFactory xpathFactory)
+            throws InvalidAnnotationForOperationException {
+
+        final NodeList bpmnAttachmentList = ((Element) wsdlOperation).getElementsByTagNameNS(SCHEMA_BPMN_ANNOTATIONS,
+                BPMN_ANNOTATION_ATTACHMENT);
+        final Map<String, XPathExpression> bpmnOperationAttachments = new HashMap<String, XPathExpression>();
+        for (int k = 0; k < bpmnAttachmentList.getLength(); k++) {
+            final Node bpmnAttachment = bpmnAttachmentList.item(k);
+            // test name declaration of attachment
+            final String bpmnAttachmentName = ((Element) bpmnAttachment).getAttribute(BPMN_ANNOTATION_ATTACHMENT_NAME);
+            if (bpmnAttachmentName == null || bpmnAttachmentName.trim().isEmpty()) {
+                throw new AttachmentNameMissingException(wsdlOperationName);
+            }
+            // test unicity of declared attachment for the operation
+            if (bpmnOperationAttachments.containsKey(bpmnAttachmentName)) {
+                throw new DuplicatedAttachmentException(wsdlOperationName, bpmnAttachmentName);
+            }
+
+            final XPathExpression bpmnAttachmentXPath;
+            final String xpathExpr = bpmnAttachment.getTextContent();
+            if (xpathExpr.trim().isEmpty()) {
+                throw new NoAttachmentMappingException(wsdlOperationName, bpmnAttachmentName);
+            } else {
+                final XPath xpath = xpathFactory.newXPath();
+                try {
+                    bpmnAttachmentXPath = xpath.compile(xpathExpr);
+                } catch (final XPathExpressionException e) {
+                    throw new AttachmentMappingExpressionException(wsdlOperationName, bpmnAttachmentName, e);
+                }
+            }
+
+            bpmnOperationAttachments.put(bpmnAttachmentName, bpmnAttachmentXPath);
+        }
+
+        return bpmnOperationAttachments;
     }
 
     /**

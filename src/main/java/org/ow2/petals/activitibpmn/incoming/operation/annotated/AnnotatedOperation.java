@@ -86,6 +86,11 @@ public abstract class AnnotatedOperation {
     private final Map<String, FormProperty> variableTypes = new HashMap<String, FormProperty>();
 
     /**
+     * The definition of attachments of the operation read from the WSDL
+     */
+    private final Map<String, XPathExpression> attachments;
+
+    /**
      * The output XSLT style-sheet compiled
      */
     private final Templates outputTemplate;
@@ -104,7 +109,8 @@ public abstract class AnnotatedOperation {
      * <b>Note 1</b>: If the user identifier placeholder is null or empty, the error {@link NoUserIdMappingException}
      * will be thrown.
      * </p>
-     * <b>Note 2</b>: For performance reasons, variable types are populated during the coherence check. </p>
+     * <b>Note 2</b>: For performance reasons, variable types are populated during the coherence check.
+     * </p>
      * 
      * @param wsdlOperation
      *            The WSDL operation containing the current annotations
@@ -119,6 +125,8 @@ public abstract class AnnotatedOperation {
      *            The placeholder of BPMN user identifier associated to the BPMN operation. Not <code>null</code>.
      * @param variables
      *            The definition of variables of the operation
+     * @param attachments
+     *            The definition of attachments of the operation
      * @param outputTemplate
      *            The output XSLT style-sheet compiled
      * @param faultTemplates
@@ -126,10 +134,11 @@ public abstract class AnnotatedOperation {
      * @throws InvalidAnnotationForOperationException
      *             The annotated operation is incoherent.
      */
-    protected AnnotatedOperation(final QName wsdlOperation, final String processDefinitionId,
-            final String actionId, final XPathExpression processInstanceIdHolder, final XPathExpression userIdHolder,
-            final Map<String, XPathExpression> variables, final Templates outputTemplate,
-            final Map<String, Templates> faultTemplates) throws InvalidAnnotationForOperationException {
+    protected AnnotatedOperation(final QName wsdlOperation, final String processDefinitionId, final String actionId,
+            final XPathExpression processInstanceIdHolder, final XPathExpression userIdHolder,
+            final Map<String, XPathExpression> variables, final Map<String, XPathExpression> attachments,
+            final Templates outputTemplate, final Map<String, Templates> faultTemplates)
+            throws InvalidAnnotationForOperationException {
         super();
         this.wsdlOperation = wsdlOperation;
         this.processDefinitionId = processDefinitionId;
@@ -137,6 +146,7 @@ public abstract class AnnotatedOperation {
         this.processInstanceIdHolder = processInstanceIdHolder;
         this.userIdHolder = userIdHolder;
         this.variables = variables;
+        this.attachments = attachments;
         this.outputTemplate = outputTemplate;
         this.faultTemplates = faultTemplates;
     }
@@ -294,6 +304,13 @@ public abstract class AnnotatedOperation {
      */
     public Map<String, FormProperty> getVariableTypes() {
         return this.variableTypes;
+    }
+
+    /**
+     * @return The definition of attachments of the operation
+     */
+    public Map<String, XPathExpression> getAttachments() {
+        return this.attachments;
     }
 
     /**
