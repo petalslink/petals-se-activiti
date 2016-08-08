@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpressionException;
 
@@ -96,7 +97,8 @@ public class CompleteUserTaskOperation extends ActivitiOperation {
 
     @Override
     protected void doExecute(final Document incomingPayload, final String bpmnUserId,
-            final Map<String, Object> taskVars, final Map<QName, String> outputNamedValues, final Exchange exchange)
+            final Map<String, Object> taskVars, final Map<String, DataHandler> attachments,
+            final Map<QName, String> outputNamedValues, final Exchange exchange)
                     throws OperationProcessingException {
 
         // Get the process instance identifier

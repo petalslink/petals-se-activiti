@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2016 Linagora
+ * Copyright (c) 2016 Linagora
  * 
  * This program/library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,18 +24,18 @@ import javax.xml.namespace.QName;
 
 
 /**
- * The value of the user identifier is required in the incoming request.
+ * The value of the attachment identifier is required in the incoming service request.
  * 
  * @author Christophe DENEUX - Linagora
  * 
  */
-public class NoUserIdValueException extends OperationProcessingFault {
+public class NoAttachmentIdValueException extends OperationProcessingFault {
 
-    private static final long serialVersionUID = -5968252264228963812L;
+    private static final long serialVersionUID = -4557656541696465503L;
 
-    private static final String MESSAGE = "User identifier is missing or empty in the incoming request !";
+    private static final String MESSAGE = "Attachment identifier is missing or empty in the incoming service request !";
 
-    public NoUserIdValueException(final QName wsdlOperation) {
+    public NoAttachmentIdValueException(final QName wsdlOperation) {
         super(wsdlOperation, MESSAGE);
     }
 

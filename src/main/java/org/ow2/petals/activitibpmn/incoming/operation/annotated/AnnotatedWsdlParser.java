@@ -297,7 +297,7 @@ public class AnnotatedWsdlParser {
                 wsdlOperationName, xpathFactory);
 
         // Get the list of nodes "bpmn:attachment"
-        final Map<String, XPathExpression> bpmnOperationAttachments = this.getAttachmentsXpathExpr(wsdlOperation,
+        final Map<String, XPathExpressionBean> bpmnOperationAttachments = this.getAttachmentsXpathExpr(wsdlOperation,
                 wsdlOperationName, xpathFactory);
 
         // Get the output "bpmn:output"
@@ -464,13 +464,13 @@ public class AnnotatedWsdlParser {
      * @return The XPath expression to select the attachments
      * @throws InvalidAnnotationForOperationException
      */
-    private Map<String, XPathExpression> getAttachmentsXpathExpr(final Node wsdlOperation,
+    private Map<String, XPathExpressionBean> getAttachmentsXpathExpr(final Node wsdlOperation,
             final QName wsdlOperationName, final XPathFactory xpathFactory)
             throws InvalidAnnotationForOperationException {
 
         final NodeList bpmnAttachmentList = ((Element) wsdlOperation).getElementsByTagNameNS(SCHEMA_BPMN_ANNOTATIONS,
                 BPMN_ANNOTATION_ATTACHMENT);
-        final Map<String, XPathExpression> bpmnOperationAttachments = new HashMap<String, XPathExpression>();
+        final Map<String, XPathExpressionBean> bpmnOperationAttachments = new HashMap<>();
         for (int k = 0; k < bpmnAttachmentList.getLength(); k++) {
             final Node bpmnAttachment = bpmnAttachmentList.item(k);
             // test name declaration of attachment
@@ -483,20 +483,20 @@ public class AnnotatedWsdlParser {
                 throw new DuplicatedAttachmentException(wsdlOperationName, bpmnAttachmentName);
             }
 
-            final XPathExpression bpmnAttachmentXPath;
+            final XPathExpression compiledXpathExpr;
             final String xpathExpr = bpmnAttachment.getTextContent();
             if (xpathExpr.trim().isEmpty()) {
                 throw new NoAttachmentMappingException(wsdlOperationName, bpmnAttachmentName);
             } else {
                 final XPath xpath = xpathFactory.newXPath();
                 try {
-                    bpmnAttachmentXPath = xpath.compile(xpathExpr);
+                    compiledXpathExpr = xpath.compile(xpathExpr);
                 } catch (final XPathExpressionException e) {
                     throw new AttachmentMappingExpressionException(wsdlOperationName, bpmnAttachmentName, e);
                 }
             }
 
-            bpmnOperationAttachments.put(bpmnAttachmentName, bpmnAttachmentXPath);
+            bpmnOperationAttachments.put(bpmnAttachmentName, new XPathExpressionBean(xpathExpr, compiledXpathExpr));
         }
 
         return bpmnOperationAttachments;

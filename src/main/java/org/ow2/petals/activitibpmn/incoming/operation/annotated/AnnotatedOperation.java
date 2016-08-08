@@ -88,7 +88,7 @@ public abstract class AnnotatedOperation {
     /**
      * The definition of attachments of the operation read from the WSDL
      */
-    private final Map<String, XPathExpression> attachments;
+    private final Map<String, XPathExpressionBean> attachments;
 
     /**
      * The output XSLT style-sheet compiled
@@ -136,7 +136,7 @@ public abstract class AnnotatedOperation {
      */
     protected AnnotatedOperation(final QName wsdlOperation, final String processDefinitionId, final String actionId,
             final XPathExpression processInstanceIdHolder, final XPathExpression userIdHolder,
-            final Map<String, XPathExpression> variables, final Map<String, XPathExpression> attachments,
+            final Map<String, XPathExpression> variables, final Map<String, XPathExpressionBean> attachments,
             final Templates outputTemplate, final Map<String, Templates> faultTemplates)
             throws InvalidAnnotationForOperationException {
         super();
@@ -309,7 +309,7 @@ public abstract class AnnotatedOperation {
     /**
      * @return The definition of attachments of the operation
      */
-    public Map<String, XPathExpression> getAttachments() {
+    public Map<String, XPathExpressionBean> getAttachments() {
         return this.attachments;
     }
 

@@ -85,7 +85,7 @@ public class CompleteUserTaskAnnotatedOperation extends AnnotatedOperation {
      */
     public CompleteUserTaskAnnotatedOperation(final QName wsdlOperationName, final String processDefinitionId,
             final String bpmnAction, final XPathExpression processInstanceIdHolder, final XPathExpression userIdHolder,
-            final Map<String, XPathExpression> variables, final Map<String, XPathExpression> attachments,
+            final Map<String, XPathExpression> variables, final Map<String, XPathExpressionBean> attachments,
             final Templates outputTemplate, final Map<String, Templates> faultTemplates)
             throws InvalidAnnotationForOperationException {
         super(wsdlOperationName, processDefinitionId, bpmnAction, processInstanceIdHolder, userIdHolder, variables,

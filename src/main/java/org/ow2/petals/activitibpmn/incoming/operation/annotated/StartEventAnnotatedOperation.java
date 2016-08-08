@@ -66,7 +66,7 @@ public class StartEventAnnotatedOperation extends AnnotatedOperation {
      */
     public StartEventAnnotatedOperation(final QName wsdlOperationName, final String processDefinitionId,
             final String actionId, final XPathExpression processInstanceIdHolder, final XPathExpression userIdHolder,
-            final Map<String, XPathExpression> variables, final Map<String, XPathExpression> attachments,
+            final Map<String, XPathExpression> variables, final Map<String, XPathExpressionBean> attachments,
             final Templates outputTemplate, final Map<String, Templates> faultTemplates)
             throws InvalidAnnotationForOperationException {
         super(wsdlOperationName, processDefinitionId, actionId, processInstanceIdHolder, userIdHolder, variables,
