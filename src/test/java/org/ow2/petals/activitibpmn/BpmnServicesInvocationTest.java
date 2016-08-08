@@ -26,20 +26,31 @@ import static org.ow2.petals.activitibpmn.ActivitiSEConstants.IntegrationOperati
 import static org.ow2.petals.activitibpmn.ActivitiSEConstants.IntegrationOperation.ITG_TASK_PORT_TYPE;
 import static org.ow2.petals.activitibpmn.ActivitiSEConstants.IntegrationOperation.ITG_TASK_SERVICE;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.LogRecord;
 
+import javax.activation.DataHandler;
 import javax.jbi.messaging.ExchangeStatus;
 import javax.jbi.messaging.MessageExchange;
+import javax.jbi.messaging.MessagingException;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
 
 import org.junit.Test;
 import org.ow2.easywsdl.wsdl.api.abstractItf.AbsItfOperation;
+import org.ow2.petals.activitibpmn.incoming.operation.exception.AttachmentMTOMException;
+import org.ow2.petals.activitibpmn.incoming.operation.exception.AttachmentMTOMHrefException;
+import org.ow2.petals.activitibpmn.incoming.operation.exception.AttachmentNotFoundException;
+import org.ow2.petals.activitibpmn.incoming.operation.exception.NoAttachmentIdValueException;
 import org.ow2.petals.activitibpmn.incoming.operation.exception.NoProcessInstanceIdValueException;
 import org.ow2.petals.activitibpmn.incoming.operation.exception.NoUserIdValueException;
 import org.ow2.petals.activitibpmn.monitoring.ActivitiActivityFlowStepData;
@@ -54,6 +65,7 @@ import org.ow2.petals.component.framework.junit.StatusMessage;
 import org.ow2.petals.component.framework.junit.helpers.ServiceProviderImplementation;
 import org.ow2.petals.component.framework.junit.impl.message.RequestToProviderMessage;
 import org.ow2.petals.component.framework.junit.impl.message.ResponseToConsumerMessage;
+import org.ow2.petals.component.framework.util.MtomUtil;
 import org.ow2.petals.components.activiti.generic._1.ActivateProcessInstances;
 import org.ow2.petals.components.activiti.generic._1.ActivateProcessInstancesResponse;
 import org.ow2.petals.components.activiti.generic._1.ActivationResult;
@@ -78,8 +90,15 @@ import org.ow2.petals.samples.se_bpmn.vacationservice.Numero;
 import org.ow2.petals.samples.se_bpmn.vacationservice.NumeroDemandeInconnu;
 import org.ow2.petals.samples.se_bpmn.vacationservice.Validation;
 import org.ow2.petals.samples.se_bpmn.vacationservice.XslParameter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
+import com.ebmwebsourcing.easycommons.uuid.SimpleUUIDGenerator;
+import com.ebmwebsourcing.easycommons.xml.DocumentBuilders;
 import com.ebmwebsourcing.easycommons.xml.SourceHelper;
+import com.ebmwebsourcing.easycommons.xml.XMLHelper;
 
 /**
  * Unit tests about request processing of BPMN services, with a component configured with default values
@@ -87,7 +106,7 @@ import com.ebmwebsourcing.easycommons.xml.SourceHelper;
  * @author Christophe DENEUX - Linagora
  * 
  */
-public class tryToRetrieveUserTask extends AbstractComponentTest {
+public class BpmnServicesInvocationTest extends AbstractComponentTest {
 
     /**
      * <p>
@@ -151,14 +170,12 @@ public class tryToRetrieveUserTask extends AbstractComponentTest {
         request_1.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(startDate));
         final String motivation = "hollidays";
         request_1.setMotifDde(motivation);
+        final String signatureAttachmentRef = new SimpleUUIDGenerator().getNewID();
+        final byte[] request_byte_1 = addSignature(request_1, signatureAttachmentRef);
 
-        // Send the 1st valid request for start event 'request
-        final RequestToProviderMessage request = new RequestToProviderMessage(
-                COMPONENT_UNDER_TEST, VALID_SU, OPERATION_DEMANDERCONGES,
-                AbsItfOperation.MEPPatternConstants.IN_OUT.value(), this.toByteArray(request_1));
-
-        // Assert the response of the 1st valid request
-        final ResponseMessage responseMsg_1 = COMPONENT.sendAndGetResponse(request);
+        // Send the 1st valid request and assert the response of the 1st valid request
+        final ResponseMessage responseMsg_1 = COMPONENT
+                .sendAndGetResponse(this.createDemanderCongesRequest(request_byte_1, signatureAttachmentRef));
 
         // Check the reply
         final Source fault_1 = responseMsg_1.getFault();
@@ -591,14 +608,12 @@ public class tryToRetrieveUserTask extends AbstractComponentTest {
         request_1.setNbJourDde(10);
         request_1.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
         request_1.setMotifDde("hollidays");
+        final String signatureAttachmentRef = new SimpleUUIDGenerator().getNewID();
+        final byte[] request_byte_1 = addSignature(request_1, signatureAttachmentRef);
 
-        // Send the 1st valid request
-        final RequestToProviderMessage requestM = new RequestToProviderMessage(
-                COMPONENT_UNDER_TEST, VALID_SU, OPERATION_DEMANDERCONGES,
-                AbsItfOperation.MEPPatternConstants.IN_OUT.value(), toByteArray(request_1));
-
-        // Assert the response of the 1st valid request
-        final ResponseMessage responseMsg_1 = COMPONENT.sendAndGetResponse(requestM);
+        // Send the 1st valid request and assert the response of the 1st valid request
+        final ResponseMessage responseMsg_1 = COMPONENT
+                .sendAndGetResponse(this.createDemanderCongesRequest(request_byte_1, signatureAttachmentRef));
 
         // Check the reply
         final Source fault_1 = responseMsg_1.getFault();
@@ -695,14 +710,12 @@ public class tryToRetrieveUserTask extends AbstractComponentTest {
         request_1.setNbJourDde(10);
         request_1.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
         request_1.setMotifDde("hollidays");
+        final String signatureAttachmentRef = new SimpleUUIDGenerator().getNewID();
+        final byte[] request_byte_1 = addSignature(request_1, signatureAttachmentRef);
 
-        // Send the 1st valid request
-        final RequestToProviderMessage requestM = new RequestToProviderMessage(
-                COMPONENT_UNDER_TEST, VALID_SU, OPERATION_DEMANDERCONGES,
-                AbsItfOperation.MEPPatternConstants.IN_OUT.value(), toByteArray(request_1));
-
-        // Assert the response of the 1st valid request
-        final ResponseMessage responseMsg_1 = COMPONENT.sendAndGetResponse(requestM);
+        // Send the 1st valid request and assert the response of the 1st valid request
+        final ResponseMessage responseMsg_1 = COMPONENT
+                .sendAndGetResponse(this.createDemanderCongesRequest(request_byte_1, signatureAttachmentRef));
 
         // Check the reply
         final Source fault_1 = responseMsg_1.getFault();
@@ -799,14 +812,12 @@ public class tryToRetrieveUserTask extends AbstractComponentTest {
         request_1.setNbJourDde(10);
         request_1.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
         request_1.setMotifDde("hollidays");
+        final String signatureAttachmentRef = new SimpleUUIDGenerator().getNewID();
+        final byte[] request_byte_1 = addSignature(request_1, signatureAttachmentRef);
 
-        // Send the 1st valid request
-        final RequestToProviderMessage requestM = new RequestToProviderMessage(
-                COMPONENT_UNDER_TEST, VALID_SU, OPERATION_DEMANDERCONGES,
-                AbsItfOperation.MEPPatternConstants.IN_OUT.value(), toByteArray(request_1));
-
-        // Assert the response of the 1st valid request
-        final ResponseMessage responseMsg_1 = COMPONENT.sendAndGetResponse(requestM);
+        // Send the 1st valid request and assert the response of the 1st valid request
+        final ResponseMessage responseMsg_1 = COMPONENT
+                .sendAndGetResponse(this.createDemanderCongesRequest(request_byte_1, signatureAttachmentRef));
 
         // Check the reply
         final Source fault_1 = responseMsg_1.getFault();
@@ -864,6 +875,37 @@ public class tryToRetrieveUserTask extends AbstractComponentTest {
         assertCurrentUserTask(response_1.getNumeroDde(), BPMN_PROCESS_1ST_USER_TASK_KEY, BPMN_USER_VALIDEUR);
     }
 
+    private byte[] addSignature(final Demande request, final String attachmentRef)
+            throws TransformerException, IOException, JAXBException, SAXException {
+        
+        final byte[] initialRequest = toByteArray(request);
+
+        final DocumentBuilder docBuilder = DocumentBuilders.takeDocumentBuilder();
+        try {
+            final Document requestDoc = docBuilder.parse(new ByteArrayInputStream(initialRequest));
+            final Node demandeNode = requestDoc.getElementsByTagName("demande").item(0);
+
+            final Element signatureElt = requestDoc.createElement("signature");
+            signatureElt.setAttribute("contentType", "image/jpeg");
+            demandeNode.appendChild(signatureElt);
+
+            final Element xopIncludeElt = requestDoc.createElementNS(MtomUtil.MTOM_NSURI, MtomUtil.MTOM_INCLUDE_TAG);
+            signatureElt.appendChild(xopIncludeElt);
+            xopIncludeElt.setAttribute("href", "cid:" + attachmentRef);
+
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try {
+                XMLHelper.writeDocument(requestDoc, baos);
+            } finally {
+                baos.close();
+            }
+            return baos.toByteArray();
+
+        } finally {
+            DocumentBuilders.releaseDocumentBuilder(docBuilder);
+        }
+    }
+
     /**
      * <p>
      * Check the message processing where:
@@ -902,14 +944,12 @@ public class tryToRetrieveUserTask extends AbstractComponentTest {
         request_1.setNbJourDde(10);
         request_1.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
         request_1.setMotifDde("hollidays");
+        final String signatureAttachmentRef = new SimpleUUIDGenerator().getNewID();
+        final byte[] request_byte_1 = addSignature(request_1, signatureAttachmentRef);
 
-        // Send the 1st valid request
-        final RequestToProviderMessage requestM = new RequestToProviderMessage(
-                COMPONENT_UNDER_TEST, VALID_SU, OPERATION_DEMANDERCONGES,
-                AbsItfOperation.MEPPatternConstants.IN_OUT.value(), toByteArray(request_1));
-
-        // Assert the response of the 1st valid request
-        final ResponseMessage responseMsg_1 = COMPONENT.sendAndGetResponse(requestM);
+        // Send the 1st valid request and assert the response of the 1st valid request
+        final ResponseMessage responseMsg_1 = COMPONENT
+                .sendAndGetResponse(this.createDemanderCongesRequest(request_byte_1, signatureAttachmentRef));
 
         // Check the reply
         final Source fault_1 = responseMsg_1.getFault();
@@ -1071,14 +1111,12 @@ public class tryToRetrieveUserTask extends AbstractComponentTest {
         request_1.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(startDate));
         final String motivation = "hollidays";
         request_1.setMotifDde(motivation);
+        final String signatureAttachmentRef = new SimpleUUIDGenerator().getNewID();
+        final byte[] request_byte_1 = addSignature(request_1, signatureAttachmentRef);
 
-        // Send the 1st valid request for start event 'request
-        final RequestToProviderMessage requestM = new RequestToProviderMessage(
-                COMPONENT_UNDER_TEST, VALID_SU, OPERATION_DEMANDERCONGES,
-                AbsItfOperation.MEPPatternConstants.IN_OUT.value(), toByteArray(request_1));
-
-        // Assert the response of the 1st valid request
-        final ResponseMessage responseMsg_1 = COMPONENT.sendAndGetResponse(requestM);
+        // Send the 1st valid request and assert the response of the 1st valid request
+        final ResponseMessage responseMsg_1 = COMPONENT
+                .sendAndGetResponse(this.createDemanderCongesRequest(request_byte_1, signatureAttachmentRef));
 
         // Check the reply
         final Source fault_1 = responseMsg_1.getFault();
@@ -1189,6 +1227,16 @@ public class tryToRetrieveUserTask extends AbstractComponentTest {
         // Check Activiti engine against the current user task
         assertProcessInstanceFinished(response_1.getNumeroDde());
         assertUserTaskEnded(response_1.getNumeroDde(), BPMN_PROCESS_2ND_USER_TASK_KEY, BPMN_USER_DEMANDEUR);
+    }
+
+    private RequestToProviderMessage createDemanderCongesRequest(final byte[] requestAsByte,
+            final String signatureAttachmentRef) throws MessagingException {
+        final RequestToProviderMessage request = new RequestToProviderMessage(COMPONENT_UNDER_TEST, VALID_SU,
+                OPERATION_DEMANDERCONGES, AbsItfOperation.MEPPatternConstants.IN_OUT.value(), requestAsByte);
+        final URL signatureUrl = Thread.currentThread().getContextClassLoader().getResource("signature.jpg");
+        assertNotNull(signatureUrl);
+        request.addInAttachment(signatureAttachmentRef, new DataHandler(signatureUrl));
+        return request;
     }
 
     /**
@@ -1587,5 +1635,302 @@ public class tryToRetrieveUserTask extends AbstractComponentTest {
             assertEquals(1, processInstances.size());
             assertFalse(processInstances.get(0).isSuspended());
         }
+    }
+
+    /**
+     * <p>
+     * Check the message processing where a request is sent to create a new process instance, where:
+     * <ul>
+     * <li>the attachment content is missing into the incoming Petals message exchange.</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Expected results:
+     * <ul>
+     * <li>a fault is returned to the caller</li>
+     * <li>no process instance is created on the Activiti engine</li>
+     * </ul>
+     * </p>
+     */
+    @Test
+    public void startEventRequest_AttachmentContentMissing() throws Exception {
+
+        final int currentProcInstNb = this.getProcessInstanceNumber(BPMN_PROCESS_DEFINITION_KEY);
+
+        // Create the 1st valid request
+        final Demande request = new Demande();
+        request.setDemandeur(BPMN_USER_DEMANDEUR);
+        request.setNbJourDde(10);
+        request.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+        request.setMotifDde("hollidays");
+        final String signatureAttachmentRef = new SimpleUUIDGenerator().getNewID();
+        final byte[] request_byte = this.addSignature(request, signatureAttachmentRef);
+
+        // Send the request
+        final RequestToProviderMessage requestM = new RequestToProviderMessage(COMPONENT_UNDER_TEST, VALID_SU,
+                OPERATION_DEMANDERCONGES, AbsItfOperation.MEPPatternConstants.IN_OUT.value(), request_byte);
+
+        // Assert the response of the request
+        final StatusMessage responseMsg = COMPONENT.sendAndGetStatus(requestM);
+
+        // Check the reply
+        final Exception error = responseMsg.getError();
+        assertNotNull("No error returns", error);
+        assertTrue("Unexpected error", error.getCause() instanceof AttachmentNotFoundException);
+        assertNull("XML payload in response", responseMsg.getOut());
+
+        // Check MONIT traces
+        final List<LogRecord> monitLogs = IN_MEMORY_LOG_HANDLER.getAllRecords(Level.MONIT);
+        assertEquals(2, monitLogs.size());
+        assertMonitProviderFailureLog(assertMonitProviderBeginLog(VACATION_INTERFACE, VACATION_SERVICE,
+                VACATION_ENDPOINT, OPERATION_DEMANDERCONGES, monitLogs.get(0)), monitLogs.get(1));
+
+        assertEquals(currentProcInstNb, this.getProcessInstanceNumber(BPMN_PROCESS_DEFINITION_KEY));
+    }
+
+    /**
+     * <p>
+     * Check the message processing where a request is sent to create a new process instance, where:
+     * <ul>
+     * <li>no attachment is provided into the incoming payload.</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Expected results:
+     * <ul>
+     * <li>a fault is returned to the caller</li>
+     * <li>no process instance is created on the Activiti engine</li>
+     * </ul>
+     * </p>
+     */
+    @Test
+    public void startEventRequest_NoAttachment() throws Exception {
+
+        final int currentProcInstNb = this.getProcessInstanceNumber(BPMN_PROCESS_DEFINITION_KEY);
+
+        // Create the 1st valid request
+        final Demande request = new Demande();
+        request.setDemandeur(BPMN_USER_DEMANDEUR);
+        request.setNbJourDde(10);
+        request.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+        request.setMotifDde("hollidays");
+
+        // Send the request
+        final RequestToProviderMessage requestM = new RequestToProviderMessage(COMPONENT_UNDER_TEST, VALID_SU,
+                OPERATION_DEMANDERCONGES, AbsItfOperation.MEPPatternConstants.IN_OUT.value(), toByteArray(request));
+
+        // Assert the response of the request
+        final StatusMessage responseMsg = COMPONENT.sendAndGetStatus(requestM);
+
+        // Check the reply
+        final Exception error = responseMsg.getError();
+        assertNotNull("No error returns", error);
+        assertTrue("Unexpected error", error.getCause() instanceof NoAttachmentIdValueException);
+        assertNull("XML payload in response", responseMsg.getOut());
+
+        // Check MONIT traces
+        final List<LogRecord> monitLogs = IN_MEMORY_LOG_HANDLER.getAllRecords(Level.MONIT);
+        assertEquals(2, monitLogs.size());
+        assertMonitProviderFailureLog(assertMonitProviderBeginLog(VACATION_INTERFACE, VACATION_SERVICE,
+                VACATION_ENDPOINT, OPERATION_DEMANDERCONGES, monitLogs.get(0)), monitLogs.get(1));
+
+        assertEquals(currentProcInstNb, this.getProcessInstanceNumber(BPMN_PROCESS_DEFINITION_KEY));
+    }
+
+    /**
+     * <p>
+     * Check the message processing where a request is sent to create a new process instance, where:
+     * <ul>
+     * <li>an attachment is provided but not in MTOM format.</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Expected results:
+     * <ul>
+     * <li>a fault is returned to the caller</li>
+     * <li>no process instance is created on the Activiti engine</li>
+     * </ul>
+     * </p>
+     */
+    @Test
+    public void startEventRequest_AttachmentNotMtomFormat() throws Exception {
+
+        final int currentProcInstNb = this.getProcessInstanceNumber(BPMN_PROCESS_DEFINITION_KEY);
+
+        // Create the 1st valid request
+        final Demande request = new Demande();
+        request.setDemandeur(BPMN_USER_DEMANDEUR);
+        request.setNbJourDde(10);
+        request.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+        request.setMotifDde("hollidays");
+        final Demande.Signature signature = new Demande.Signature();
+        signature.setValue(new byte[11]);
+        request.setSignature(signature);
+
+        // Send the request
+        final RequestToProviderMessage requestM = new RequestToProviderMessage(COMPONENT_UNDER_TEST, VALID_SU,
+                OPERATION_DEMANDERCONGES, AbsItfOperation.MEPPatternConstants.IN_OUT.value(), toByteArray(request));
+
+        // Assert the response of the request
+        final StatusMessage responseMsg = COMPONENT.sendAndGetStatus(requestM);
+
+        // Check the reply
+        final Exception error = responseMsg.getError();
+        assertNotNull("No error returns", error);
+        assertTrue("Unexpected error", error.getCause() instanceof AttachmentMTOMException);
+        assertNull("XML payload in response", responseMsg.getOut());
+
+        // Check MONIT traces
+        final List<LogRecord> monitLogs = IN_MEMORY_LOG_HANDLER.getAllRecords(Level.MONIT);
+        assertEquals(2, monitLogs.size());
+        assertMonitProviderFailureLog(assertMonitProviderBeginLog(VACATION_INTERFACE, VACATION_SERVICE,
+                VACATION_ENDPOINT, OPERATION_DEMANDERCONGES, monitLogs.get(0)), monitLogs.get(1));
+
+        assertEquals(currentProcInstNb, this.getProcessInstanceNumber(BPMN_PROCESS_DEFINITION_KEY));
+    }
+
+    /**
+     * <p>
+     * Check the message processing where a request is sent to create a new process instance, where:
+     * <ul>
+     * <li>an attachment is provided in MTOM format but without the attribute 'href'.</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Expected results:
+     * <ul>
+     * <li>a fault is returned to the caller</li>
+     * <li>no process instance is created on the Activiti engine</li>
+     * </ul>
+     * </p>
+     */
+    @Test
+    public void startEventRequest_AttachmentMtomFormatWithoutHref() throws Exception {
+
+        final int currentProcInstNb = this.getProcessInstanceNumber(BPMN_PROCESS_DEFINITION_KEY);
+
+        // Create the 1st valid request
+        final Demande request = new Demande();
+        request.setDemandeur(BPMN_USER_DEMANDEUR);
+        request.setNbJourDde(10);
+        request.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+        request.setMotifDde("hollidays");
+        final byte[] byteRequest = toByteArray(request);
+        final DocumentBuilder docBuilder = DocumentBuilders.takeDocumentBuilder();
+        final ByteArrayOutputStream baos;
+        try {
+            final Document requestDoc = docBuilder.parse(new ByteArrayInputStream(byteRequest));
+            final Node demandeNode = requestDoc.getElementsByTagName("demande").item(0);
+
+            final Element signatureElt = requestDoc.createElement("signature");
+            signatureElt.setAttribute("contentType", "image/jpeg");
+            demandeNode.appendChild(signatureElt);
+
+            final Element xopIncludeElt = requestDoc.createElementNS(MtomUtil.MTOM_NSURI, MtomUtil.MTOM_INCLUDE_TAG);
+            signatureElt.appendChild(xopIncludeElt);
+
+            baos = new ByteArrayOutputStream();
+            try {
+                XMLHelper.writeDocument(requestDoc, baos);
+            } finally {
+                baos.close();
+            }
+        } finally {
+            DocumentBuilders.releaseDocumentBuilder(docBuilder);
+        }
+
+        // Send the request
+        final RequestToProviderMessage requestM = new RequestToProviderMessage(COMPONENT_UNDER_TEST, VALID_SU,
+                OPERATION_DEMANDERCONGES, AbsItfOperation.MEPPatternConstants.IN_OUT.value(), baos.toByteArray());
+
+        // Assert the response of the request
+        final StatusMessage responseMsg = COMPONENT.sendAndGetStatus(requestM);
+
+        // Check the reply
+        final Exception error = responseMsg.getError();
+        assertNotNull("No error returns", error);
+        assertTrue("Unexpected error", error.getCause() instanceof AttachmentMTOMHrefException);
+        assertNull("XML payload in response", responseMsg.getOut());
+
+        // Check MONIT traces
+        final List<LogRecord> monitLogs = IN_MEMORY_LOG_HANDLER.getAllRecords(Level.MONIT);
+        assertEquals(2, monitLogs.size());
+        assertMonitProviderFailureLog(assertMonitProviderBeginLog(VACATION_INTERFACE, VACATION_SERVICE,
+                VACATION_ENDPOINT, OPERATION_DEMANDERCONGES, monitLogs.get(0)), monitLogs.get(1));
+
+        assertEquals(currentProcInstNb, this.getProcessInstanceNumber(BPMN_PROCESS_DEFINITION_KEY));
+    }
+
+    /**
+     * <p>
+     * Check the message processing where a request is sent to create a new process instance, where:
+     * <ul>
+     * <li>an attachment is provided in MTOM format without an empty attribute 'href'.</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Expected results:
+     * <ul>
+     * <li>a fault is returned to the caller</li>
+     * <li>no process instance is created on the Activiti engine</li>
+     * </ul>
+     * </p>
+     */
+    @Test
+    public void startEventRequest_AttachmentMtomEmptyHref() throws Exception {
+
+        final int currentProcInstNb = this.getProcessInstanceNumber(BPMN_PROCESS_DEFINITION_KEY);
+
+        // Create the 1st valid request
+        final Demande request = new Demande();
+        request.setDemandeur(BPMN_USER_DEMANDEUR);
+        request.setNbJourDde(10);
+        request.setDateDebutDde(DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()));
+        request.setMotifDde("hollidays");
+        final byte[] byteRequest = toByteArray(request);
+        final DocumentBuilder docBuilder = DocumentBuilders.takeDocumentBuilder();
+        final ByteArrayOutputStream baos;
+        try {
+            final Document requestDoc = docBuilder.parse(new ByteArrayInputStream(byteRequest));
+            final Node demandeNode = requestDoc.getElementsByTagName("demande").item(0);
+
+            final Element signatureElt = requestDoc.createElement("signature");
+            signatureElt.setAttribute("contentType", "image/jpeg");
+            demandeNode.appendChild(signatureElt);
+
+            final Element xopIncludeElt = requestDoc.createElementNS(MtomUtil.MTOM_NSURI, MtomUtil.MTOM_INCLUDE_TAG);
+            signatureElt.appendChild(xopIncludeElt);
+            xopIncludeElt.setAttribute("href", "");
+
+            baos = new ByteArrayOutputStream();
+            try {
+                XMLHelper.writeDocument(requestDoc, baos);
+            } finally {
+                baos.close();
+            }
+        } finally {
+            DocumentBuilders.releaseDocumentBuilder(docBuilder);
+        }
+
+        // Send the request
+        final RequestToProviderMessage requestM = new RequestToProviderMessage(COMPONENT_UNDER_TEST, VALID_SU,
+                OPERATION_DEMANDERCONGES, AbsItfOperation.MEPPatternConstants.IN_OUT.value(), baos.toByteArray());
+
+        // Assert the response of the request
+        final StatusMessage responseMsg = COMPONENT.sendAndGetStatus(requestM);
+
+        // Check the reply
+        final Exception error = responseMsg.getError();
+        assertNotNull("No error returns", error);
+        assertTrue("Unexpected error", error.getCause() instanceof NoAttachmentIdValueException);
+        assertNull("XML payload in response", responseMsg.getOut());
+
+        // Check MONIT traces
+        final List<LogRecord> monitLogs = IN_MEMORY_LOG_HANDLER.getAllRecords(Level.MONIT);
+        assertEquals(2, monitLogs.size());
+        assertMonitProviderFailureLog(assertMonitProviderBeginLog(VACATION_INTERFACE, VACATION_SERVICE,
+                VACATION_ENDPOINT, OPERATION_DEMANDERCONGES, monitLogs.get(0)), monitLogs.get(1));
+
+        assertEquals(currentProcInstNb, this.getProcessInstanceNumber(BPMN_PROCESS_DEFINITION_KEY));
     }
 }

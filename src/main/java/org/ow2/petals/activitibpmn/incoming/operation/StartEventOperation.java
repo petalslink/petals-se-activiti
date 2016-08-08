@@ -26,11 +26,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.ow2.petals.activitibpmn.incoming.operation.annotated.AnnotatedOperation;
@@ -70,6 +72,11 @@ public class StartEventOperation extends ActivitiOperation {
     private final HistoryService historyService;
 
     /**
+     * The task service of the BPMN engine
+     */
+    private final TaskService taskService;
+
+    /**
      * An UUID generator.
      */
     private final SimpleUUIDGenerator simpleUUIDGenerator;
@@ -88,12 +95,13 @@ public class StartEventOperation extends ActivitiOperation {
      * @param logger
      */
     public StartEventOperation(final AnnotatedOperation annotatedOperation, final IdentityService identityService,
-            final RuntimeService runtimeService, final HistoryService historyService,
+            final RuntimeService runtimeService, final HistoryService historyService, final TaskService taskService,
             final SimpleUUIDGenerator simpleUUIDGenerator, final Logger logger) {
         super(annotatedOperation, logger);
         this.identityService = identityService;
         this.runtimeService = runtimeService;
         this.historyService = historyService;
+        this.taskService = taskService;
         this.simpleUUIDGenerator = simpleUUIDGenerator;
     }
 
@@ -104,7 +112,8 @@ public class StartEventOperation extends ActivitiOperation {
 
     @Override
     protected void doExecute(final Document incomingPayload, final String bpmnUserId,
-            final Map<String, Object> processVars, final Map<QName, String> outputNamedValues, final Exchange exchange)
+            final Map<String, Object> processVars, final Map<String, DataHandler> attachments,
+            final Map<QName, String> outputNamedValues, final Exchange exchange)
                     throws OperationProcessingException {
 
         // TODO Set the CategoryId (not automatically done, but automatically done for tenant_id ?)
@@ -129,12 +138,12 @@ public class StartEventOperation extends ActivitiOperation {
                     this.deployedProcessDefinitionId, processVars);
             bpmnProcessIdValue = createdProcessInstance.getId();
 
+            if (this.logger.isLoggable(Level.FINE)) {
+                this.logger.fine("*** NEW PROCESS INSTANCE started,  processId = " + bpmnProcessIdValue);
+            }
+
         } finally {
             this.identityService.setAuthenticatedUserId(null);
-        }
-
-        if (this.logger.isLoggable(Level.FINE)) {
-            this.logger.fine("*** NEW PROCESS INSTANCE started,  processId = " + bpmnProcessIdValue);
         }
 
         // To prepare the output response, we add named value dedicated to this operation:

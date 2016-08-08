@@ -520,6 +520,7 @@ public class ActivitiSuManager extends ServiceEngineServiceUnitManager {
                         getComponent().getProcessEngine().getIdentityService(),
                         getComponent().getProcessEngine().getRuntimeService(),
                         getComponent().getProcessEngine().getHistoryService(),
+                        getComponent().getProcessEngine().getTaskService(),
                         this.simpleUUIDGenerator, this.logger));
             } else if (annotatedOperation instanceof CompleteUserTaskAnnotatedOperation) {
                 operations.add(new CompleteUserTaskOperation(annotatedOperation,
