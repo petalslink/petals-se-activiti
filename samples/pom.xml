@@ -22,7 +22,7 @@
   <name>petals-activiti-rootbuilder</name>
   <groupId>org.ow2.petals.samples</groupId>
   <artifactId>petals-activiti-rootbuilder</artifactId>
-  <version>4.3.0-SNAPSHOT</version>
+  <version>4.3.2-SNAPSHOT</version>
   <description>Petals samples artifacts for SE ACTIVITI BPMN.</description>
   <packaging>pom</packaging>
   
