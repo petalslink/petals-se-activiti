@@ -26,11 +26,11 @@
    </parent>
 
    <groupId>org.ow2.petals.samples</groupId>
-   <artifactId>sa-vacation-sample</artifactId>
+   <artifactId>sa-activiti-vacation-sample</artifactId>
    <packaging>jbi-service-assembly</packaging>
    <name>sa-vacation-sample</name>
    <!-- No version set -->
-   <description>sa-vacation-sample description</description>
+   <description>sa-activiti-vacation-sample description</description>
 
    <properties>
       <!-- Skip dependency check for service assembly because it has Java no source code. -->

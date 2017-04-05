@@ -112,8 +112,8 @@
       </sql>
 
       <echo message="Deploying and starting service assemblies..." />
-      <deploySa url="${org.ow2.petals.samples:sa-vacation-sample:jbi-service-assembly}"
-                id="sa-vacation-sample"
+      <deploySa url="${org.ow2.petals.samples:sa-activiti-vacation-sample:jbi-service-assembly}"
+                id="sa-activiti-vacation-sample"
                 jmx.port="${host1.port}"
                 jmx.host="${host1.ip}"
                 jmx.user="${host1.username}"
