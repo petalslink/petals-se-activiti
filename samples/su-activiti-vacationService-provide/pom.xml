@@ -34,7 +34,8 @@
 
    <properties>
       <maven-enforcer-plugin.rules.upperBound>false</maven-enforcer-plugin.rules.upperBound>
-      <activiti.version>5.22.0-PETALS-0-SNAPSHOT</activiti.version>
+      <activiti.version>5.22.0</activiti.version>
+      <activiti.groupId>org.activiti</activiti.groupId>
    </properties>
 
    <dependencyManagement>
@@ -74,7 +75,7 @@
       
       <!-- To test the process definition we must use our own Activiti engine-->
       <dependency>
-         <groupId>org.ow2.petals.activiti</groupId>
+         <groupId>${activiti.groupId}</groupId>
          <artifactId>activiti-engine</artifactId>
          <version>${activiti.version}</version>
          <scope>test</scope>
@@ -88,7 +89,7 @@
          </exclusions>
       </dependency>
       <dependency>
-         <groupId>org.ow2.petals.activiti</groupId>
+         <groupId>${activiti.groupId}</groupId>
          <artifactId>activiti-cxf</artifactId>
          <version>${activiti.version}</version>
          <scope>test</scope>
@@ -137,10 +138,10 @@
                   <id>analyze</id>
                   <configuration>
                      <usedDependencies>
-                        <!-- The :following dependency is needed because it's the JBI component on which this SU runs -->
+                        <!-- The following dependency is needed because it's the JBI component on which this SU runs -->
                         <usedDependency>org.ow2.petals:petals-se-activiti</usedDependency>
                         <!-- These following dependencies are needed for unit test -->
-                        <usedDependency>org.ow2.petals.activiti:activiti-cxf</usedDependency>
+                        <usedDependency>${activiti.groupId}:activiti-cxf</usedDependency>
                         <usedDependency>com.h2database:h2</usedDependency>
                      </usedDependencies>
                   </configuration>
