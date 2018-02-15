@@ -23,12 +23,9 @@
       <artifactId>petals-cdkbased-components-parent</artifactId>
       <groupId>org.ow2.petals</groupId>
       <relativePath>../cdk-based-parent/pom.xml</relativePath>
-      <version>1.0.4-SNAPSHOT</version>
+      <version>1.0.4</version>
    </parent>
 
-	<!-- ============== -->
-	<!-- Identification -->
-	<!-- ============== -->
    <name>Petals ESB - Components - SE Activiti BPMN</name>
    <artifactId>petals-se-activiti</artifactId>
    <groupId>org.ow2.petals</groupId>
