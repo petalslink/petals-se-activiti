@@ -20,12 +20,11 @@
    <modelVersion>4.0.0</modelVersion>
    <parent>
       <artifactId>petals-activiti-parent</artifactId>
-      <groupId>org.ow2.petals.samples</groupId>
-      <version>1.1.1-1.0.0-SNAPSHOT</version>
+      <groupId>org.ow2.petals.samples.activiti</groupId>
+      <version>1.2.0-1.0.0-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
-   <groupId>org.ow2.petals.samples</groupId>
    <artifactId>sa-activiti-vacation-sample</artifactId>
    <packaging>jbi-service-assembly</packaging>
    <name>sa-vacation-sample</name>
@@ -41,31 +40,31 @@
 
    <dependencies>
       <dependency>
-         <groupId>org.ow2.petals.samples</groupId>
+         <groupId>org.ow2.petals.samples.activiti</groupId>
          <artifactId>su-activiti-vacationService-provide</artifactId>
          <version>${project.version}</version>
          <type>jbi-service-unit</type>
       </dependency>
       <dependency>
-         <groupId>org.ow2.petals.samples</groupId>
+         <groupId>org.ow2.petals.samples.activiti</groupId>
          <artifactId>su-SOAP-vacationService-consume</artifactId>
          <version>${project.version}</version>
          <type>jbi-service-unit</type>
       </dependency>
       <dependency>
-         <groupId>org.ow2.petals.samples</groupId>
+         <groupId>org.ow2.petals.samples.activiti</groupId>
          <artifactId>su-SOAP-notifyVacationService-provide</artifactId>
          <version>${project.version}</version>
          <type>jbi-service-unit</type>
       </dependency>
       <dependency>
-         <groupId>org.ow2.petals.samples</groupId>
+         <groupId>org.ow2.petals.samples.activiti</groupId>
          <artifactId>su-SOAP-archiveService-provide</artifactId>
          <version>${project.version}</version>
          <type>jbi-service-unit</type>
       </dependency>
       <dependency>
-         <groupId>org.ow2.petals.samples</groupId>
+         <groupId>org.ow2.petals.samples.activiti</groupId>
          <artifactId>su-SOAP-activitiIntegrationService-consume</artifactId>
          <version>${project.version}</version>
          <type>jbi-service-unit</type>
