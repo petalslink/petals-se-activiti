@@ -85,6 +85,11 @@
                <groupId>commons-logging</groupId>
                <artifactId>commons-logging</artifactId>
             </exclusion>
+            <exclusion>
+               <!-- Already included in JRE 8 -->
+               <groupId>javax.activation</groupId>
+               <artifactId>activation</artifactId>
+            </exclusion>
          </exclusions>
       </dependency>
       <dependency>
