@@ -128,8 +128,6 @@ public abstract class ActivitiOperation implements ActivitiService {
     /**
      * @param annotatedOperation
      *            Annotations of the operation to create
-     * @param processDefinitionId
-     *            The process definition identifier to associate to the operation to create
      * @param logger
      */
     protected ActivitiOperation(final AnnotatedOperation annotatedOperation, final Logger logger) {
@@ -332,7 +330,7 @@ public abstract class ActivitiOperation implements ActivitiService {
 
     /**
      * 
-     * @param domSource
+     * @param incomingPayload
      *            The incoming XML payload
      * @param userId
      *            The user identifier

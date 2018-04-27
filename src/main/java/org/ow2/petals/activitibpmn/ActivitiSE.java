@@ -180,7 +180,6 @@ public class ActivitiSE extends AbstractServiceEngine {
      *            the end-point Name and operation Name
      * @param activitiservice
      *            the Activiti service
-     * @return the map with the inserted elements
      */
     public void registerActivitiService(final ServiceEndpointOperationKey eptAndOperation,
             final ActivitiService activitiservice) {

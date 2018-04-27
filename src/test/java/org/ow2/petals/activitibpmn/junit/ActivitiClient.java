@@ -100,12 +100,14 @@ public class ActivitiClient extends ExternalResource {
     /**
      * <p>
      * Creates a temporary Activiti client connected to a default Activiti server:
+     * </p>
      * <ul>
-     * <li>JDBC Driver: {@link #DEFAULT_JDBC_DRIVER},</li>
+     * <li>JDBC Driver: {@link org.ow2.petals.activitibpmn.ActivitiSEConstants.DBServer#DEFAULT_JDBC_DRIVER},</li>
      * <li>JDBC URL: an embedded in-memoty H2 database,</li>
      * <li>JDBC username: {@link #DEFAULT_JDBC_USERNAME},</li>
      * <li>JDBC password: {@link #DEFAULT_JDBC_PWD}.</li>
      * </ul>
+     * <p>
      * And using the default configuration for the identity service.
      * </p>
      */
@@ -116,13 +118,13 @@ public class ActivitiClient extends ExternalResource {
     /**
      * <p>
      * Creates a temporary Activiti client connected to a default Activiti server:
+     * </p>
      * <ul>
-     * <li>JDBC Driver: {@link #DEFAULT_JDBC_DRIVER},</li>
+     * <li>JDBC Driver: {@link org.ow2.petals.activitibpmn.ActivitiSEConstants.DBServer#DEFAULT_JDBC_DRIVER},</li>
      * <li>JDBC URL: an embedded in-memoty H2 database,</li>
      * <li>JDBC username: {@link #DEFAULT_JDBC_USERNAME},</li>
      * <li>JDBC password: {@link #DEFAULT_JDBC_PWD}.</li>
      * </ul>
-     * </p>
      * 
      * @param identityServiceCfg
      *            Configuration file of the identity service, as resource name
@@ -135,13 +137,13 @@ public class ActivitiClient extends ExternalResource {
     /**
      * <p>
      * Creates a temporary Activiti client connected to a default Activiti server:
+     * </p>
      * <ul>
-     * <li>JDBC Driver: {@link #DEFAULT_JDBC_DRIVER},</li>
+     * <li>JDBC Driver: {@link org.ow2.petals.activitibpmn.ActivitiSEConstants.DBServer#DEFAULT_JDBC_DRIVER},</li>
      * <li>JDBC URL: a JDBC URL for H2,</li>
      * <li>JDBC username: {@link #DEFAULT_JDBC_USERNAME},</li>
      * <li>JDBC password: {@link #DEFAULT_JDBC_PWD}.</li>
      * </ul>
-     * </p>
      * 
      * @param h2JdbcUrl
      *            The JDBC URL for H2 database
@@ -155,13 +157,13 @@ public class ActivitiClient extends ExternalResource {
     /**
      * <p>
      * Creates a temporary Activiti client connected to a default Activiti server:
+     * </p>
      * <ul>
-     * <li>JDBC Driver: {@link #DEFAULT_JDBC_DRIVER},</li>
+     * <li>JDBC Driver: {@link org.ow2.petals.activitibpmn.ActivitiSEConstants.DBServer#DEFAULT_JDBC_DRIVER},</li>
      * <li>JDBC URL: an embedded H2 database as file,</li>
      * <li>JDBC username: {@link #DEFAULT_JDBC_USERNAME},</li>
      * <li>JDBC password: {@link #DEFAULT_JDBC_PWD}.</li>
      * </ul>
-     * </p>
      * 
      * @param fileForJdbcUrl
      *            The file path of the Activiti database set as JDBC URL

@@ -264,11 +264,11 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * </p>
      * <p>
      * Expected results:
+     * </p>
      * <ul>
      * <li>No error occurs</li>
      * <li>The expected annotated operation are retrieved</li>
      * </ul>
-     * </p>
      */
     @Test
     public void parse_WsdlValid() throws SAXException, IOException {
@@ -311,11 +311,11 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * </p>
      * <p>
      * Expected results:
+     * </p>
      * <ul>
      * <li>No error occurs</li>
      * <li>The expected annotated operation are retrieved</li>
      * </ul>
-     * </p>
      */
     @Test
     public void parse_WsdlValidWithImports() throws SAXException, IOException {
@@ -385,12 +385,12 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * <p>
      * Check the parser against a WSDL containing BPMN annotations but the user identifier place holder is as following
      * for the BPMN actions 'userTask' and 'startEvent':
+     * </p>
      * <ul>
      * <li>tag missing (ie. no XML tag user id),</li>
      * <li>placeholder missing (ie. no XML attribute IN msg),</li>
      * <li>empty (ie. the XML attribute IN msg is empty).</li>
      * </ul>
-     * </p>
      * <p>
      * Expected results: An error occurs about a missing or empty user id placeholder for both BPMN actions, and an
      * error occurs about no valid annotated operation found.
@@ -503,6 +503,7 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * <p>
      * Check the parser against a WSDL containing BPMN annotations but the process instance identifier place holder is
      * as following for the BPMN actions 'userTask' and 'startEvent':
+     * </p>
      * <ul>
      * <li>tag missing (ie. no XML tag process instance id),</li>
      * <li>for BPMN action 'startEvent':
@@ -518,13 +519,13 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * </ul>
      * </li>
      * </ul>
-     * </p>
      * <p>
      * Expected results:
+     * </p>
      * <ul>
      * <li>an error occurs about a missing or empty process instance id placeholder for BPMN action 'userTask',</li>
      * <li>no error occurs for BPMN action 'startEvent'</li>
-     * </p>
+     * </ul>
      */
     @Test
     public void parse_WsdlWithProcessInstanceIdPlaceHolderMissing() throws SAXException, IOException {
@@ -596,11 +597,11 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * <p>
      * Check the parser against a WSDL containing BPMN annotations but the process definition identifier is as following
      * for the BPMN actions 'userTask' and 'startEvent':
+     * </p>
      * <ul>
      * <li>attribute missing (ie. no attribute in the XML tag 'operation'),</li>
      * <li>empty attribute(ie. the XML attribute is empty).</li>
      * </ul>
-     * </p>
      * <p>
      * Expected results: An error occurs about a missing or empty process definition id for both BPMN actions, and an
      * error occurs about no valid annotated operation found.
@@ -657,13 +658,13 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * <p>
      * Check the parser against a WSDL containing BPMN annotations but the BPMN actions 'startEvent' has invalid
      * attributes as following:
+     * </p>
      * <ul>
      * <li>attribute missing (ie. no attribute in the XML tag 'operation'),</li>
      * <li>empty attribute 'none-start-event-id' (ie. the XML attribute is empty),</li>
      * <li>empty attribute 'start-event-message-name' (ie. the XML attribute is empty),</li>
      * <li>attributes 'none-start-event-id' and 'start-event-message-name' set.</li>
      * </ul>
-     * </p>
      * <p>
      * Expected results: An error occurs about a missing or empty none start event id for the BPMN action, and an error
      * occurs about no valid annotated operation found.
@@ -721,11 +722,11 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * <p>
      * Check the parser against a WSDL containing BPMN annotations but the user task identifier is as following for the
      * BPMN actions 'userTask':
+     * </p>
      * <ul>
      * <li>attribute missing (ie. no attribute in the XML tag 'operation'),</li>
      * <li>empty attribute(ie. the XML attribute is empty).</li>
      * </ul>
-     * </p>
      * <p>
      * Expected results: An error occurs about a missing or empty user task id for the BPMN action, and an error occurs
      * about no valid annotated operation found.
@@ -819,6 +820,7 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * <p>
      * Check the parser against a WSDL containing BPMN annotations but the variable place holder is as following for the
      * BPMN actions 'userTask' and 'startEvent':
+     * </p>
      * <ul>
      * <li>variable tag missing (ie. no XML tag user id),</li>
      * <li>variable name is missing,</li>
@@ -826,7 +828,6 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * <li>variable placeholder is missing,</li>
      * <li>variable placeholder is empty.</li>
      * </ul>
-     * </p>
      * <p>
      * Expected results: An error occurs about a missing or empty variable placeholder for both BPMN actions, and an
      * error occurs about no valid annotated operation found.
@@ -1445,12 +1446,12 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * <p>
      * Check the parser against a WSDL containing BPMN annotations but the output XSLT style-sheet is as following for
      * the BPMN actions 'userTask' and 'startEvent':
+     * </p>
      * <ul>
      * <li>tag missing (ie. no XML tag about the output XSLT style-sheet),</li>
      * <li>value missing (ie. the content of the XML tag about the output XSLT style-sheet is missing),</li>
      * <li>empty (ie. the content of XML tag about the output XSLT style-sheet is empty).</li>
      * </ul>
-     * </p>
      * <p>
      * Expected results: An error occurs about a missing or empty output XSLT style-sheet for both BPMN actions, and an
      * error occurs about no valid annotated operation found.
@@ -1563,6 +1564,7 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * <p>
      * Check the parser against a WSDL containing BPMN annotations but a fault XSLT style-sheet is as following for the
      * BPMN actions 'userTask' and 'startEvent':
+     * </p>
      * <ul>
      * <li>tag missing (ie. no XML tag about the fault XSLT style-sheet),</li>
      * <li>the mapped exception attribute is missing,</li>
@@ -1570,7 +1572,6 @@ public class AnnotatedWsdlParserTest extends AbstractTest {
      * <li>the value is missing (ie. the content of the XML tag about the fault XSLT style-sheet is missing),</li>
      * <li>the value is empty (ie. the content of XML tag about the fault XSLT style-sheet is empty).</li>
      * </ul>
-     * </p>
      * <p>
      * Expected results: An error occurs about a missing or empty fault XSLT style-sheet for both BPMN actions, and an
      * error occurs about no valid annotated operation found.

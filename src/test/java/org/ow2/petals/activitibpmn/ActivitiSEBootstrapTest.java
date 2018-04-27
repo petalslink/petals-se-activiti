@@ -742,11 +742,11 @@ public class ActivitiSEBootstrapTest extends AbstractBootstrapTest {
      * </p>
      * <p>
      * Expected results:
+     * </p>
      * <ul>
      * <li>the value is successfully set,</li>
      * <li>the default value of the parameter is retrieved next.</li>
      * </ul>
-     * </p>
      */
     @Test
     public void setJdbcDriver_SpaceValue() throws Exception {
@@ -772,11 +772,11 @@ public class ActivitiSEBootstrapTest extends AbstractBootstrapTest {
      * </p>
      * <p>
      * Expected results:
+     * </p>
      * <ul>
      * <li>the value is successfully set,</li>
      * <li>the default value of the parameter is retrieved next.</li>
      * </ul>
-     * </p>
      */
     @Test
     public void setEngineIdentityServiceClassName_SpaceValue() throws Exception {

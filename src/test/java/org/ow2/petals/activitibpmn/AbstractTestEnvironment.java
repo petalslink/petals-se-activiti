@@ -111,8 +111,6 @@ public abstract class AbstractTestEnvironment extends AbstractTest {
      * 
      * @param processInstanceId
      *            The process instance identifier
-     * @param processDefinitionKey
-     *            The process definition key
      */
     protected void assertProcessInstanceFinished(final String processInstanceId) {
 

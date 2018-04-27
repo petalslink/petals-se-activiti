@@ -86,10 +86,6 @@ public class BpmnReader {
      * </p>
      * 
      * @return The map of embedded process definition containing. The map key is the process file name.
-     * @param suRootPath
-     *            The root directory of the service unit. Not <code>null</code>.
-     * @param logger
-     *            A {@link Logger} instance. Not <code>null</code>.
      * @throws ProcessDefinitionDeclarationException
      *             A raw data of the SU JBI descriptor is invalid
      */
