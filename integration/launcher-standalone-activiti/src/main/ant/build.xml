@@ -297,6 +297,7 @@
          <local name="return-code" />
          <tempfile property="tempfile" prefix="petals-cli" suffix=".out" />
          <echo message="Petals CLI output dumped in: ${tempfile}" />
+         <!-- We use the monitoring object 'petals-se-flowable' instead of 'petals-se-activiti' that is the same for SE Activiti and was removed from Petals CLI -->
          <exec executable="./petals-cli.sh"
                dir="${petals.cli.home}/bin"
                output="${tempfile}"
@@ -314,7 +315,7 @@
             <arg value="--" />
             <arg value="monitoring" />
             <arg value="-o" />
-            <arg value="petals-se-activiti" />
+            <arg value="petals-se-flowable" />
             <arg value="-f" />
             <arg value="async-job-executor-thread-pool" />
             <arg value="--" />
@@ -351,6 +352,7 @@
          <local name="return-code" />
          <tempfile property="tempfile" prefix="petals-cli" suffix=".out" />
          <echo message="Petals CLI output dumped in: ${tempfile}" />
+         <!-- We use the monitoring object 'petals-se-flowable' instead of 'petals-se-activiti' that is the same for SE Activiti and was removed from Petals CLI -->
          <exec executable="./petals-cli.sh"
                dir="${petals.cli.home}/bin"
                output="${tempfile}"
@@ -368,7 +370,7 @@
             <arg value="--" />
             <arg value="monitoring" />
             <arg value="-o" />
-            <arg value="petals-se-activiti" />
+            <arg value="petals-se-flowable" />
             <arg value="-f" />
             <arg value="database-connection-pool" />
             <arg value="--" />
