@@ -28,7 +28,7 @@
    <groupId>org.ow2.petals</groupId>
    <artifactId>petals-se-activiti-clientserver-api</artifactId>
    <name>Petals ESB - Components - SE Activiti - Client/Server API</name>
-   <version>1.1.0</version>
+   <version>1.1.1-SNAPSHOT</version>
    <packaging>jar</packaging>
    <description>Petals SE Activiti Client/Server API</description>
 
@@ -43,6 +43,6 @@
    <scm>
       <connection>scm:git:https://github.com/petalslink/petals-se-activiti.git</connection>
       <developerConnection>scm:git:https://github.com/petalslink/petals-se-activiti.git</developerConnection>
-     <tag>petals-se-activiti-clientserver-api-1.1.0</tag>
+     <tag>HEAD</tag>
   </scm>
 </project>
