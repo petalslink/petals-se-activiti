@@ -38,37 +38,37 @@
     <dependency>
       <groupId>org.ow2.petals.samples.activiti</groupId>
       <artifactId>su-SOAP-activitiIntegrationService-consume</artifactId>
-      <version>1.2.0-1.0.0-SNAPSHOT</version>
+      <version>${petals-samples-activiti.version}</version>
       <type>jbi-service-unit</type>
     </dependency>
     <dependency>
       <groupId>org.ow2.petals.samples.activiti</groupId>
       <artifactId>su-SOAP-vacationService-consume</artifactId>
-      <version>1.2.0-1.0.0-SNAPSHOT</version>
+      <version>${petals-samples-activiti.version}</version>
       <type>jbi-service-unit</type>
     </dependency>
     <dependency>
       <groupId>org.ow2.petals.samples.activiti</groupId>
       <artifactId>su-SOAP-archiveService-consume</artifactId>
-      <version>1.2.0-1.0.0-SNAPSHOT</version>
+      <version>${petals-samples-activiti.version}</version>
       <type>jbi-service-unit</type>
     </dependency>
     <dependency>
       <groupId>org.ow2.petals.samples.activiti</groupId>
       <artifactId>su-SOAP-archiveService-provide</artifactId>
-      <version>1.2.0-1.0.0-SNAPSHOT</version>
+      <version>${petals-samples-activiti.version}</version>
       <type>jbi-service-unit</type>
     </dependency>
     <dependency>
       <groupId>org.ow2.petals.samples.activiti</groupId>
       <artifactId>su-SOAP-notifyVacationService-consume</artifactId>
-      <version>1.2.0-1.0.0-SNAPSHOT</version>
+      <version>${petals-samples-activiti.version}</version>
       <type>jbi-service-unit</type>
     </dependency>
     <dependency>
       <groupId>org.ow2.petals.samples.activiti</groupId>
       <artifactId>su-SOAP-notifyVacationService-provide</artifactId>
-      <version>1.2.0-1.0.0-SNAPSHOT</version>
+      <version>${petals-samples-activiti.version}</version>
       <type>jbi-service-unit</type>
     </dependency>
   </dependencies>
